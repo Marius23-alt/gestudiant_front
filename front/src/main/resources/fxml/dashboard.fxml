@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="20.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.maven.controller.DashboardController">
+    <padding>
+        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+    </padding>
+    <children>
+        <HBox alignment="CENTER">
+            <children>
+                <TextField maxWidth="800.0" promptText="Rechercher un étudiant" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-padding: 5 15 5 15;" />
+            </children>
+        </HBox>
+
+        <TableView fx:id="tableEtudiants" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colNom" text="Nom" />
+                <TableColumn fx:id="colPrenom" text="Prénom" />
+                <TableColumn fx:id="colNumEtudiant" text="Num étudiant" />
+                <TableColumn fx:id="colMention" text="Mention" />
+                <TableColumn fx:id="colParcours" text="Parcours" />
+                <TableColumn fx:id="colSemestre" text="Semestre" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+    </children>
+</VBox>
