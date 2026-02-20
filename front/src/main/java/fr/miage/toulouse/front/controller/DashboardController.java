@@ -1,7 +1,7 @@
 package fr.miage.toulouse.front.controller;
 
-import fr.miage.toulouse.maven.cours.Etudiant;
-import fr.miage.toulouse.maven.database.Request;
+import fr.miage.toulouse.cours.Etudiant;
+import fr.miage.toulouse.database.Request;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
