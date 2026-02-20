@@ -1,6 +1,7 @@
 package fr.miage.toulouse.front.controller;
 
 
+import fr.miage.toulouse.cours.Etudiant;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -27,11 +28,9 @@ public class MainController {
 
 
     /**
-     * A completer
-     * @param fxmlFile
-     * @param newTitle
+     *
+     * @param event
      */
-
     @FXML // Si souris passe sur bouton, changer la couleur du bouton
     private void handleMouseIn(MouseEvent event) {
         if (event.getSource() instanceof Button) {
