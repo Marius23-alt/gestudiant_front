@@ -15,7 +15,7 @@
 
 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.maven.controller.MainController">
    <children>
-      <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <BorderPane style="-fx-background-color: #03224C;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
             <HBox alignment="CENTER_LEFT" prefHeight="81.0" prefWidth="427.0" style="-fx-background-color: #03224C;" BorderPane.alignment="CENTER">
                <children>
@@ -39,7 +39,7 @@
          <left>
             <VBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" spacing="10.0" style="-fx-background-color: #03224C;" BorderPane.alignment="CENTER_LEFT">
                <children>
-                  <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#handleDashboard" prefHeight="30.0" prefWidth="168.0" style="-fx-background-color: transparent;" text="Dashboard" textFill="WHITE">
+                  <Button fx:id="btnDashboard" alignment="TOP_LEFT" mnemonicParsing="false" onAction="#handleDashboard" onMouseEntered="#handleMouseIn" onMouseExited="#handleMouseOut" prefHeight="45.0" prefWidth="168.0" style="-fx-background-color: transparent;" text="Dashboard" textFill="WHITE">
                      <graphic>
                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -51,7 +51,7 @@
                         <Font name="Segoe UI Bold" size="12.0" />
                      </font>
                   </Button>
-                  <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#handleAjouterEtudiant" prefHeight="32.0" prefWidth="159.0" style="-fx-background-color: transparent;" text="Ajouter étudiant" textFill="WHITE">
+                  <Button fx:id="btnAjouter" alignment="TOP_LEFT" mnemonicParsing="false" onAction="#handleAjouterEtudiant" onMouseEntered="#handleMouseIn" onMouseExited="#handleMouseOut" prefHeight="45.0" prefWidth="168.0" style="-fx-background-color: transparent;" text="Ajouter étudiant" textFill="WHITE">
                      <graphic>
                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -63,7 +63,7 @@
                         <Font name="Segoe UI Bold" size="12.0" />
                      </font>
                   </Button>
-                  <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#handleAdminSemestre" prefHeight="32.0" prefWidth="165.0" style="-fx-background-color: transparent;" text="Admin semestre" textFill="WHITE">
+                  <Button fx:id="btnAdmin" alignment="TOP_LEFT" mnemonicParsing="false" onAction="#handleAdminSemestre" onMouseEntered="#handleMouseIn" onMouseExited="#handleMouseOut" prefHeight="45.0" prefWidth="168.0" style="-fx-background-color: transparent;" text="Admin semestre" textFill="WHITE">
                      <graphic>
                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <image>
