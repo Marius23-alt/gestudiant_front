@@ -74,8 +74,8 @@ public class DashboardController {
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
         colNumEtudiant.setCellValueFactory(new PropertyValueFactory<>("numEtudiant"));
-        colParcours.setCellValueFactory(new PropertyValueFactory<>("id_parcours"));
-        colMention.setCellValueFactory(new PropertyValueFactory<>("id_mention"));
+        colParcours.setCellValueFactory(new PropertyValueFactory<>("idParcours"));
+        colMention.setCellValueFactory(new PropertyValueFactory<>("idMention"));
         colSemestre.setCellValueFactory(new PropertyValueFactory<>("semestreActuel"));
 
         initialiserGestionDoubleClic();
