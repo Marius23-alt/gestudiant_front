@@ -34,6 +34,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
                 <Text text="Numéro étudiant :" GridPane.rowIndex="0" />
@@ -53,13 +54,15 @@
 
                 <Text text="Parcours :" GridPane.rowIndex="5" />
                 <ComboBox fx:id="comboParcours" prefWidth="200.0" promptText="Choisir parcours" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Text text="Semestre :" GridPane.rowIndex="6" />
+            <ComboBox fx:id="comboSemestre" prefWidth="200.0" promptText="Choisir semestre" GridPane.columnIndex="1" GridPane.rowIndex="6" />
             </children>
             <padding>
                 <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
             </padding>
         </GridPane>
 
-        <Button mnemonicParsing="false" style="-fx-background-color: #03224C; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 40; -fx-background-radius: 10;" text="Valider">
+        <Button mnemonicParsing="false" onAction="#handleValider" style="-fx-background-color: #03224C; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 40; -fx-background-radius: 10;" text="Valider">
             <VBox.margin>
                 <Insets bottom="20.0" />
             </VBox.margin>
