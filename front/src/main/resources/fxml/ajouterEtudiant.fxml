@@ -11,6 +11,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.control.DatePicker?>
 <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.front.controller.AjouterEtudiantController">
     <children>
         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Ajouter étudiant">
@@ -47,7 +48,7 @@
                 <TextField fx:id="fieldNom" maxWidth="200.0" promptText="Dupont" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
                 <Text text="Date naissance :" GridPane.rowIndex="3" />
-                <TextField fx:id="fieldDate" maxWidth="200.0" promptText="JJ/MM/AAAA" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <DatePicker fx:id="pickerDate" prefWidth="200.0" promptText="Choisir une date" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
                 <Text text="Mention :" GridPane.rowIndex="4" />
                 <ComboBox fx:id="comboMention" prefWidth="200.0" promptText="Choisir mention" GridPane.columnIndex="1" GridPane.rowIndex="4" />

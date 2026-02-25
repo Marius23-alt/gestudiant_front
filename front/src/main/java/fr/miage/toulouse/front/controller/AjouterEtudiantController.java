@@ -6,6 +6,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.control.DatePicker;
+import java.time.LocalDate;
 
 import javafx.event.ActionEvent;
 import java.util.List;
@@ -14,7 +16,7 @@ public class AjouterEtudiantController {
     @FXML private TextField fieldNumeroEtudiant;
     @FXML private TextField fieldPrenom;
     @FXML private TextField fieldNom;
-    @FXML private TextField fieldDate;
+    @FXML private DatePicker pickerDate;
     @FXML private ComboBox<String> comboMention;
     @FXML private ComboBox<String> comboParcours;
     @FXML private ComboBox<String> comboSemestre;
@@ -60,18 +62,14 @@ public class AjouterEtudiantController {
         String nom = fieldNom.getText();
         String nomParcours = comboParcours.getValue();
         String semestre = comboSemestre.getValue();
+        LocalDate dateNaissance = pickerDate.getValue();
 
-        // 2. Vérification : Est-ce que l'utilisateur a tout rempli ?
-        if (numero.isEmpty() || prenom.isEmpty() || nom.isEmpty() || nomParcours == null) {
+        if (numero.isEmpty() || prenom.isEmpty() || nom.isEmpty() || nomParcours == null || dateNaissance == null) {
             afficherAlerte("Erreur", "Veuillez remplir tous les champs obligatoires.", Alert.AlertType.ERROR);
             return; // On arrête tout, on n'envoie rien à la base de données
         }
 
-        // 3. Traitement avec la base de données
         Request req = new Request();
-
-        // On traduit le nom du parcours en ID
-        String idParcours = req.recupIdParcours(nomParcours);
 
         // N'oublie pas de l'ajouter dans ton 'if' de vérification pour vérifier qu'il n'est pas null !
         if (numero.isEmpty() || prenom.isEmpty() || nom.isEmpty() || nomParcours == null || semestre == null) {
@@ -79,17 +77,19 @@ public class AjouterEtudiantController {
             return;
         }
 
+        String idParcours = req.recupIdParcours(nomParcours);
+        String dateMySQL = dateNaissance.toString();
+
         if (idParcours != null) {
             // On récupère le vrai résultat de la base de données
-            boolean ajoutReussi = req.ajouterEtudiant(numero, nom, prenom, idParcours, semestre);
+            boolean ajoutReussi = req.ajouterEtudiant(numero, nom, prenom, dateMySQL, idParcours, semestre);
 
             if (ajoutReussi) {
                 afficherAlerte("Succès", "L'étudiant " + prenom + " " + nom + " a bien été ajouté !", Alert.AlertType.INFORMATION);
-
-                // On vide les champs
                 fieldNumeroEtudiant.clear();
                 fieldNom.clear();
                 fieldPrenom.clear();
+                pickerDate.setValue(null);
             } else {
                 // Si ajoutReussi est false
                 afficherAlerte("Erreur", "L'ajout a échoué. Cet étudiant existe peut-être déjà ou les informations sont incorrectes.", Alert.AlertType.ERROR);
