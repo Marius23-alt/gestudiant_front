@@ -11,7 +11,8 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+<?import javafx.scene.control.DatePicker?>
+<VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.front.controller.AjouterEtudiantController">
     <children>
         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Ajouter étudiant">
             <font>
@@ -34,32 +35,35 @@
                 <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
                 <Text text="Numéro étudiant :" GridPane.rowIndex="0" />
-                <TextField maxWidth="200.0" promptText="XXXXXXX" GridPane.columnIndex="1" />
+                <TextField fx:id="fieldNumeroEtudiant" maxWidth="200.0" promptText="XXXXXXX" GridPane.columnIndex="1" />
 
                 <Text text="Prénom :" GridPane.rowIndex="1" />
-                <TextField maxWidth="200.0" promptText="Antoine" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <TextField fx:id="fieldPrenom" maxWidth="200.0" promptText="Antoine" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
                 <Text text="Nom :" GridPane.rowIndex="2" />
-                <TextField maxWidth="200.0" promptText="Dupont" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <TextField fx:id="fieldNom" maxWidth="200.0" promptText="Dupont" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
                 <Text text="Date naissance :" GridPane.rowIndex="3" />
-                <TextField maxWidth="200.0" promptText="JJ/MM/AAAA" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <DatePicker fx:id="pickerDate" prefWidth="200.0" promptText="Choisir une date" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
                 <Text text="Mention :" GridPane.rowIndex="4" />
-                <ComboBox prefWidth="200.0" promptText="Choisir mention" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <ComboBox fx:id="comboMention" prefWidth="200.0" promptText="Choisir mention" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
                 <Text text="Parcours :" GridPane.rowIndex="5" />
-                <ComboBox prefWidth="200.0" promptText="Choisir parcours" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <ComboBox fx:id="comboParcours" prefWidth="200.0" promptText="Choisir parcours" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Text text="Semestre :" GridPane.rowIndex="6" />
+            <ComboBox fx:id="comboSemestre" prefWidth="200.0" promptText="Choisir semestre" GridPane.columnIndex="1" GridPane.rowIndex="6" />
             </children>
             <padding>
                 <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
             </padding>
         </GridPane>
 
-        <Button mnemonicParsing="false" style="-fx-background-color: #03224C; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 40; -fx-background-radius: 10;" text="Valider">
+        <Button mnemonicParsing="false" onAction="#handleValider" style="-fx-background-color: #03224C; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 40; -fx-background-radius: 10;" text="Valider">
             <VBox.margin>
                 <Insets bottom="20.0" />
             </VBox.margin>
