@@ -9,8 +9,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 
@@ -37,17 +35,21 @@ public class DashboardController {
     }
 
     /**
-     * Configure la gestion des interactions souris sur le tableau des étudiants.
-     * Cette méthode définit une (RowFactory = comportement des lignes) personnalisée pour détecter les double-clics
-     * sur les lignes du tableau. Lorsqu'un étudiant est double-cliqué :
-     * - L'objet (Etudiant) correspondant à la ligne est récupéré
-     * - Une demande d'ouverture de la vue "Profil" est envoyée au contrôleur principal
-     * via (handleProfilEtudiant)
+     * Initialise la gestion du double-clic sur les lignes du tableau des étudiants.
+     * <p>
+     * Cette méthode personnalise le comportement des lignes ({@code TableRow}) du {@code TableView}.
+     * Lorsqu'un utilisateur effectue un double-clic sur une ligne contenant des données, la méthode :
+     * <ul>
+     * <li>Récupère l'objet {@link Etudiant} lié à la ligne sélectionnée.</li>
+     * <li>Délègue l'action au contrôleur principal ({@code MainController}) pour charger
+     * et afficher la vue détaillée du profil de cet étudiant.</li>
+     * <li>Affiche des informations de débogage dans la console pour suivre la navigation.</li>
+     * </ul>
+     * </p>
      */
     private void initialiserGestionDoubleClic() {
         tableEtudiants.setRowFactory(tv -> {
             TableRow<Etudiant> row = new TableRow<>();
-
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
 
@@ -67,7 +69,17 @@ public class DashboardController {
     }
 
     /**
-     * Lie les colonnes du tableau aux attributs de la classe Etudiant puis appel chargerTableeau()
+     * Méthode d'initialisation appelée automatiquement par JavaFX après le chargement du fichier FXML.
+     * <p>
+     * Cette méthode prépare et configure le tableau d'affichage des étudiants (Dashboard) :
+     * <ul>
+     * <li>Associe chaque colonne du tableau ({@code TableColumn}) à l'attribut correspondant
+     * dans la classe modèle {@link Etudiant} grâce aux {@code PropertyValueFactory}.</li>
+     * <li>Configure les interactions utilisateur en appelant la méthode de gestion du double-clic.</li>
+     * <li>Déclenche le chargement initial des données depuis la base de données pour remplir
+     * le tableau dès l'ouverture de la vue.</li>
+     * </ul>
+     * </p>
      */
     @FXML
     public void initialize() {
@@ -83,12 +95,24 @@ public class DashboardController {
         chargerTableau();
     }
 
+    /**
+     * Charge ou actualise les données du tableau (Dashboard) avec la liste des étudiants.
+     * <p>
+     * Cette méthode effectue les opérations suivantes :
+     * <ul>
+     * <li>Vide la liste actuelle en mémoire pour éviter d'afficher des doublons.</li>
+     * <li>Interroge la base de données via la classe {@link Request} pour récupérer
+     * tous les étudiants (ayant une inscription "en_cours").</li>
+     * <li>Met à jour l'interface graphique en injectant la nouvelle liste ({@code ObservableList})
+     * dans le composant {@code TableView}.</li>
+     * </ul>
+     * </p>
+     */
     private void chargerTableau() {
 
         listeEtudiants.clear();
         Request req = new Request();
         listeEtudiants = req.recupEtudiant();
-
 
         tableEtudiants.setItems(listeEtudiants);
     }
