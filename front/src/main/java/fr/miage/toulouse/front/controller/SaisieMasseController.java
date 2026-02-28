@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 public class SaisieMasseController {
     @FXML private Button btnRetour;
     @FXML private Label lblContexte;
+    @FXML private CheckBox checkAll;
 
     @FXML private TableView<Etudiant> tableEtudiants;
     @FXML private TableColumn<Etudiant, String> colNom;
@@ -57,5 +58,14 @@ public class SaisieMasseController {
     @FXML
     private void handleValiderMasse(ActionEvent event) {
         System.out.println("Clic sur Valider Masse : Il faudra traiter les cases cochées !");
+    }
+
+    /**
+     * Coche ou décoche tous les étudiants présents dans le tableau.
+     */
+    @FXML
+    private void handleSelectAll() {
+        boolean selected = checkAll.isSelected();
+        System.out.println("Tout sélectionner : " + selected);
     }
 }

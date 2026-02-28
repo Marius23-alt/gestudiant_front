@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" spacing="30.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.front.controller.UeController">
+<VBox alignment="TOP_CENTER" spacing="30.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.front.controller.UeController">
     <padding>
         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
     </padding>
@@ -19,7 +15,7 @@
             <children>
                 <ComboBox fx:id="comboMention" prefHeight="45.0" prefWidth="180.0" promptText="Mention" style="-fx-background-color: #E0E0E0; -fx-background-radius: 10; -fx-font-weight: bold; -fx-font-size: 14px;" />
                 <ComboBox fx:id="comboParcours" prefHeight="45.0" prefWidth="180.0" promptText="Parcours" style="-fx-background-color: #E0E0E0; -fx-background-radius: 10; -fx-font-weight: bold; -fx-font-size: 14px;" />
-                <ComboBox fx:id="comboAnnee" prefHeight="45.0" prefWidth="180.0" promptText="Année" style="-fx-background-color: #E0E0E0; -fx-background-radius: 10; -fx-font-weight: bold; -fx-font-size: 14px;" />
+                <ComboBox fx:id="comboSemestre" prefHeight="45.0" prefWidth="180.0" promptText="Semestre" style="-fx-background-color: #E0E0E0; -fx-background-radius: 10; -fx-font-weight: bold; -fx-font-size: 14px;" />
             </children>
         </HBox>
 
@@ -29,11 +25,11 @@
             </font>
         </Label>
 
-        <TableView fx:id="tableUe" VBox.vgrow="ALWAYS" style="-fx-border-color: black; -fx-border-width: 2;">
+        <TableView fx:id="tableUe" style="-fx-border-color: black; -fx-border-width: 2;" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="colMatiere" prefWidth="250.0" text="Matières" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-alignment: CENTER-LEFT;" />
+                <TableColumn fx:id="colMatiere" prefWidth="250.0" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-alignment: CENTER-LEFT;" text="Matières" />
 
-                <TableColumn text="Traitement des UE" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-alignment: CENTER;">
+                <TableColumn style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-alignment: CENTER;" text="Traitement des UE">
                     <columns>
                         <TableColumn fx:id="colInscription" prefWidth="200.0" style="-fx-alignment: CENTER;" />
 

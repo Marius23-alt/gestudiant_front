@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.front.controller.DashboardController">
+<VBox spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.front.controller.DashboardController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -23,7 +23,7 @@
             <children>
                 <ComboBox fx:id="comboMention" prefHeight="40.0" prefWidth="180.0" promptText="Mention" style="-fx-background-color: #E0E0E0; -fx-background-radius: 10;" />
                 <ComboBox fx:id="comboParcours" prefHeight="40.0" prefWidth="180.0" promptText="Parcours" style="-fx-background-color: #E0E0E0; -fx-background-radius: 10;" />
-                <ComboBox fx:id="comboAnnee" prefHeight="40.0" prefWidth="180.0" promptText="Année" style="-fx-background-color: #E0E0E0; -fx-background-radius: 10;" />
+                <ComboBox fx:id="comboSemestre" prefHeight="40.0" prefWidth="180.0" promptText="Semestre" style="-fx-background-color: #E0E0E0; -fx-background-radius: 10;" />
             </children>
         </HBox>
 
@@ -31,7 +31,7 @@
             <children>
                 <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                     <children>
-                        <TableView fx:id="tableEtudiants" VBox.vgrow="ALWAYS" style="-fx-border-color: #03224C; -fx-border-width: 1; -fx-background-radius: 10; -fx-border-radius: 10;">
+                        <TableView fx:id="tableEtudiants" style="-fx-border-color: #03224C; -fx-border-width: 1; -fx-background-radius: 10; -fx-border-radius: 10;" VBox.vgrow="ALWAYS">
                             <columns>
                                 <TableColumn fx:id="colNom" text="Nom" />
                                 <TableColumn fx:id="colPrenom" text="Prénom" />

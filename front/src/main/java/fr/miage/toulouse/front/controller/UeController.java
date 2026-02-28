@@ -13,7 +13,7 @@ import javafx.util.Callback;
 public class UeController {
     @FXML private ComboBox<Mention> comboMention;
     @FXML private ComboBox<Parcour> comboParcours;
-    @FXML private ComboBox<String> comboAnnee;
+    @FXML private ComboBox<String> comboSemestre;
 
     @FXML private Label lblTitreUe;
 
