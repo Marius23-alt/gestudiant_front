@@ -36,31 +36,31 @@ public class AjouterEtudiantController {
      */
     @FXML
     public void initialize(){
-        Request req = new Request();
-        List<String> listeMentions = req.recupMentions();
-
-        comboParcours.setDisable(true);
-        comboSemestre.getItems().addAll("1", "2", "3", "4", "5", "6");
-
-        if (listeMentions != null) {
-            System.out.println("Succès : " + listeMentions.size() + " mentions trouvées dans la BD !");
-            comboMention.getItems().addAll(listeMentions);
-        } else {
-            System.out.println("Erreur : La liste des mentions est NULL !");
-        }
-
-        comboMention.getSelectionModel().selectedItemProperty().addListener((obs, ancienneValeur, nouvelleValeur) -> {
-
-            if (nouvelleValeur != null){
-                comboParcours.setDisable(false);
-                comboParcours.getItems().clear();
-
-                List<String> nouveauxParcours = req.recupParcoursParMention(nouvelleValeur);
-                if (nouveauxParcours != null) {
-                    comboParcours.getItems().addAll(nouveauxParcours);
-                }
-            }
-        });
+//        Request req = new Request();
+////        List<String> listeMentions = req.recupMentions();
+//
+//        comboParcours.setDisable(true);
+//        comboSemestre.getItems().addAll("1", "2", "3", "4", "5", "6");
+//
+////        if (listeMentions != null) {
+////            System.out.println("Succès : " + listeMentions.size() + " mentions trouvées dans la BD !");
+////            comboMention.getItems().addAll(listeMentions);
+////        } else {
+////            System.out.println("Erreur : La liste des mentions est NULL !");
+////        }
+//
+//        comboMention.getSelectionModel().selectedItemProperty().addListener((obs, ancienneValeur, nouvelleValeur) -> {
+//
+//            if (nouvelleValeur != null){
+//                comboParcours.setDisable(false);
+//                comboParcours.getItems().clear();
+//
+//                List<String> nouveauxParcours = req.recupParcoursParMention(nouvelleValeur);
+//                if (nouveauxParcours != null) {
+//                    comboParcours.getItems().addAll(nouveauxParcours);
+//                }
+//            }
+//        });
     }
 
     /**
@@ -68,37 +68,37 @@ public class AjouterEtudiantController {
      */
     @FXML
     public void handleValider(ActionEvent event) {
-        String numero = fieldNumeroEtudiant.getText();
-        String prenom = fieldPrenom.getText();
-        String nom = fieldNom.getText();
-        String nomParcours = comboParcours.getValue();
-        String semestre = comboSemestre.getValue();
-        LocalDate dateNaissance = pickerDate.getValue();
-
-        if (numero.isEmpty() || prenom.isEmpty() || nom.isEmpty() || nomParcours == null || dateNaissance == null || semestre == null) {
-            afficherAlerte("Erreur", "Veuillez remplir tous les champs obligatoires.", Alert.AlertType.ERROR);
-            return;
-        }
-
-        Request req = new Request();
-
-        String idParcours = req.recupIdParcours(nomParcours);
-        String dateMySQL = dateNaissance.toString();
-
-        if (idParcours != null) {
-            boolean ajoutReussi = req.ajouterEtudiant(numero, nom, prenom, dateMySQL, idParcours, semestre);
-            if (ajoutReussi) {
-                afficherAlerte("Succès", "L'étudiant " + prenom + " " + nom + " a bien été ajouté !", Alert.AlertType.INFORMATION);
-                fieldNumeroEtudiant.clear();
-                fieldNom.clear();
-                fieldPrenom.clear();
-                pickerDate.setValue(null);
-            } else {
-                afficherAlerte("Erreur", "L'ajout a échoué. Cet étudiant existe peut-être déjà ou les informations sont incorrectes.", Alert.AlertType.ERROR);
-            }
-        } else {
-            afficherAlerte("Erreur serveur", "Impossible de trouver l'identifiant de ce parcours.", Alert.AlertType.ERROR);
-        }
+//        String numero = fieldNumeroEtudiant.getText();
+//        String prenom = fieldPrenom.getText();
+//        String nom = fieldNom.getText();
+//        String nomParcours = comboParcours.getValue();
+//        String semestre = comboSemestre.getValue();
+//        LocalDate dateNaissance = pickerDate.getValue();
+//
+//        if (numero.isEmpty() || prenom.isEmpty() || nom.isEmpty() || nomParcours == null || dateNaissance == null || semestre == null) {
+//            afficherAlerte("Erreur", "Veuillez remplir tous les champs obligatoires.", Alert.AlertType.ERROR);
+//            return;
+//        }
+//
+//        Request req = new Request();
+//
+//        String idParcours = req.recupIdParcours(nomParcours);
+//        String dateMySQL = dateNaissance.toString();
+//
+//        if (idParcours != null) {
+//            boolean ajoutReussi = req.ajouterEtudiant(numero, nom, prenom, dateMySQL, idParcours, semestre);
+//            if (ajoutReussi) {
+//                afficherAlerte("Succès", "L'étudiant " + prenom + " " + nom + " a bien été ajouté !", Alert.AlertType.INFORMATION);
+//                fieldNumeroEtudiant.clear();
+//                fieldNom.clear();
+//                fieldPrenom.clear();
+//                pickerDate.setValue(null);
+//            } else {
+//                afficherAlerte("Erreur", "L'ajout a échoué. Cet étudiant existe peut-être déjà ou les informations sont incorrectes.", Alert.AlertType.ERROR);
+//            }
+//        } else {
+//            afficherAlerte("Erreur serveur", "Impossible de trouver l'identifiant de ce parcours.", Alert.AlertType.ERROR);
+//        }
     }
 
 
@@ -117,11 +117,11 @@ public class AjouterEtudiantController {
      * @param type    Le style visuel de l'alerte (ex: {@code Alert.AlertType.ERROR} ou
      * {@code Alert.AlertType.INFORMATION}), qui définit l'icône affichée.
      */
-    private void afficherAlerte(String titre, String message, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(titre);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+//    private void afficherAlerte(String titre, String message, Alert.AlertType type) {
+//        Alert alert = new Alert(type);
+//        alert.setTitle(titre);
+//        alert.setHeaderText(null);
+//        alert.setContentText(message);
+//        alert.showAndWait();
+//    }
 }
