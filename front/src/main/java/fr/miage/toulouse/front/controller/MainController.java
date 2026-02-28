@@ -91,13 +91,62 @@ public class MainController {
     }
 
     /**
-     * Gère l'affichage de la vue "UE".
+     * Gère l'affichage de la vue de gestion des Unités d'Enseignement (UE).
+     * <p>
+     * Cette méthode réalise les opérations suivantes :
+     * <ul>
+     * <li>Met visuellement en évidence le bouton "UE" dans le menu latéral via {@link #setActiveButton}.</li>
+     * <li>Charge le fichier FXML correspondant à la vue des UE.</li>
+     * <li>Récupère le contrôleur de la vue chargée ({@link UeController}) et lui injecte
+     * une référence du contrôleur principal ({@code this}) pour permettre la navigation inverse.</li>
+     * <li>Remplace le contenu de la zone centrale par cette nouvelle vue et met à jour le titre de la fenêtre.</li>
+     * </ul>
+     * </p>
      */
     @FXML
-    private void handleUe(){
-        loadView("Ue.fxml", "UE");
+    public void handleUe() {
         setActiveButton(btnUe);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Ue.fxml"));
+            Parent view = loader.load();
 
+            UeController ueCtrl = loader.getController();
+            ueCtrl.setMainController(this);
+
+            contentArea.getChildren().setAll(view);
+            titleText.setText("UE");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Gère l'affichage de la vue de saisie de masse (Inscriptions ou Validations).
+     * <p>
+     * Cette méthode est généralement appelée par un contrôleur enfant (comme {@link UeController}).
+     * Elle charge la vue générique {@code saisieMasse.fxml} et établit la liaison bidirectionnelle
+     * en injectant le {@code MainController} dans le {@link SaisieMasseController}.
+     * Cela permet notamment au bouton "Retour" de la nouvelle vue de fonctionner correctement.
+     * </p>
+     */
+    @FXML
+    public void handleSaisieMasse() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/saisieMasse.fxml"));
+            Parent view = loader.load();
+
+            // On passe le MainController à la page de Saisie pour que le bouton Retour fonctionne !
+            SaisieMasseController saisieCtrl = loader.getController();
+            saisieCtrl.setMainController(this);
+
+            contentArea.getChildren().setAll(view);
+            // Le titre sera modifié dynamiquement plus tard
+            titleText.setText("Saisie de Masse");
+
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Erreur chargement Saisie Masse : {}", e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
