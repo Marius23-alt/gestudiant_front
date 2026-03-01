@@ -11,8 +11,16 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-
 import javafx.scene.control.cell.PropertyValueFactory;
+
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+
 
 import java.util.List;
 
@@ -29,6 +37,10 @@ public class DashboardController {
     @FXML private ComboBox<String> comboMention;
     @FXML private ComboBox<String> comboParcours;
     @FXML private ComboBox<String> comboSemestre;
+
+    @FXML private Label lblStatTitle;
+    @FXML private PieChart pieChartRepartition;
+    @FXML private BarChart<String, Number> barChartEvolution;
 
     private ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList();
     private MainController mainController;
@@ -210,6 +222,63 @@ public class DashboardController {
 
         // Puis il affiche le résultat
         listeEtudiants.setAll(etudiantsFiltres);
+
+        mettreAJourStatistiques(etudiantsFiltres);
+    }
+
+    /**
+     * Met à jour dynamiquement les composants visuels de statistiques (titre et graphiques) du Dashboard.
+     * <p>
+     * Cette méthode recalcule les données statistiques en se basant sur la liste d'étudiants fournie
+     * (qui correspond à la liste actuellement filtrée et affichée dans le tableau).
+     * Elle effectue les opérations suivantes :
+     * <ul>
+     * <li><b>Titre :</b> Adapte le texte explicatif en fonction de la mention actuellement sélectionnée.</li>
+     * <li><b>Graphique Circulaire (PieChart) :</b> Calcule et affiche la répartition des étudiants par parcours.</li>
+     * <li><b>Graphique en Barres (BarChart) :</b> Calcule et affiche le nombre d'étudiants inscrits pour chaque semestre (trié par ordre croissant).</li>
+     * </ul>
+     * </p>
+     *
+     * @param listeFiltree La liste des objets {@link Etudiant} à analyser pour générer les statistiques.
+     */
+    private void mettreAJourStatistiques(List<Etudiant> listeFiltree) {
+
+        // Mise à jour du Titre
+        String mention = comboMention.getValue();
+        if (mention == null || mention.equals("Toutes les mentions")) {
+            lblStatTitle.setText("Statistiques globales de l'université");
+        } else {
+            lblStatTitle.setText("Statistiques : " + mention);
+        }
+
+        // Mise à jour du PieChart (Ex: Répartition par Parcours)
+        pieChartRepartition.getData().clear();
+
+        // On regroupe les étudiants par nom de parcours et on les compte
+        Map<String, Long> repartitionParcours = listeFiltree.stream()
+                .collect(Collectors.groupingBy(e -> e.getParcour().getNom(), Collectors.counting()));
+
+        // On crée une part de camembert pour chaque parcours trouvé
+        for (Map.Entry<String, Long> entry : repartitionParcours.entrySet()) {
+            pieChartRepartition.getData().add(new PieChart.Data(entry.getKey() + " (" + entry.getValue() + ")", entry.getValue()));
+        }
+
+        // Mise à jour du BarChart (Ex: Répartition par Semestre)
+        barChartEvolution.getData().clear();
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Nombre d'étudiants");
+
+        // On regroupe par semestre et on compte
+        Map<Integer, Long> repartitionSemestre = listeFiltree.stream()
+                .collect(Collectors.groupingBy(Etudiant::getSemestreActuel, Collectors.counting()));
+
+        // On trie les semestres dans l'ordre (1, 2, 3...) pour que le graphique soit logique
+        repartitionSemestre.keySet().stream().sorted().forEach(semestre -> {
+            series.getData().add(new XYChart.Data<>("S" + semestre, repartitionSemestre.get(semestre)));
+        });
+
+        barChartEvolution.getData().add(series);
     }
 
 
