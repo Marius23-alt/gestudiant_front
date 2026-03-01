@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -25,17 +26,34 @@ public class DashboardController {
     @FXML private TableColumn<Etudiant, String> colParcours;
     @FXML private TableColumn<Etudiant, String> colSemestre;
 
+    @FXML private ComboBox<String> comboMention;
+    @FXML private ComboBox<String> comboParcours;
+    @FXML private ComboBox<String> comboSemestre;
+
     private ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList();
     private MainController mainController;
 
     /**
-     * Initialisation du mainControlleur pour pouvoir ensuite appeler ses méthodes (en particulier pour changement vue dashboard -> profilEtudiant
-     * @param mainController Un objet de type MainController
+     * Initialise la référence vers le contrôleur principal.
+     * <p>
+     * Cette liaison est nécessaire pour permettre la navigation entre les différentes vues
+     * (par exemple, du Dashboard vers le Profil de l'étudiant).
+     * </p>
+     *
+     * @param mainController L'instance du {@link MainController} gérant la fenêtre principale.
      */
     public void setMainController(MainController mainController){
         this.mainController = mainController;
     }
 
+    /**
+     * Configure l'événement de double-clic sur les lignes du tableau des étudiants.
+     * <p>
+     * Lorsqu'une ligne contenant un étudiant est double-cliquée, cette méthode récupère
+     * l'objet {@link Etudiant} correspondant et demande au {@link MainController} d'ouvrir
+     * la vue détaillée de son profil.
+     * </p>
+     */
     private void initialiserGestionDoubleClic() {
         tableEtudiants.setRowFactory(tv -> {
             TableRow<Etudiant> row = new TableRow<>();
@@ -54,6 +72,14 @@ public class DashboardController {
         });
     }
 
+    /**
+     * Méthode d'initialisation appelée automatiquement par JavaFX après le chargement du fichier FXML.
+     * <p>
+     * Elle configure les colonnes du tableau (y compris l'extraction des propriétés imbriquées
+     * comme la mention ou le parcours via {@code SimpleStringProperty}), initialise la détection
+     * des clics, charge les données depuis le {@link DataManager} et met en place les filtres.
+     * </p>
+     */
     @FXML
     public void initialize() {
         // 1. Les variables simples
@@ -62,7 +88,6 @@ public class DashboardController {
         colNumEtudiant.setCellValueFactory(new PropertyValueFactory<>("numEtu")); // ⚠️ Corrigé : c'est numEtu maintenant
         colSemestre.setCellValueFactory(new PropertyValueFactory<>("semestreActuel"));
 
-        // 🌟 2. Les objets imbriqués (La magie opère ici !)
         // On dit à la colonne d'aller chercher le nom du parcours à l'intérieur de l'objet Parcours
         colParcours.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getParcour().getNom())
@@ -75,14 +100,72 @@ public class DashboardController {
 
         initialiserGestionDoubleClic();
         chargerTableau();
+
+        initialiserFiltres();
     }
 
+    /**
+     * Charge les données du tableau avec la liste complète des étudiants.
+     * <p>
+     * Cette méthode récupère instantanément les données depuis la mémoire vive
+     * via le {@link DataManager}, puis met à jour l'interface graphique.
+     * </p>
+     */
     private void chargerTableau() {
-        // 🌟 FINI LES REQUÊTES SQL ICI ! On pioche directement dans le DataManager de manière instantanée
         List<Etudiant> data = DataManager.getInstance().getListeEtudiants();
-
         listeEtudiants = FXCollections.observableArrayList(data);
         tableEtudiants.setItems(listeEtudiants);
+    }
+
+    /**
+     * Initialise les listes déroulantes (ComboBox) servant de filtres.
+     * <p>
+     * Récupère les listes uniques de mentions, parcours et semestres depuis le {@link DataManager}
+     * pour peupler les options. Ajoute également les écouteurs d'événements pour déclencher
+     * le filtrage à chaque sélection de l'utilisateur.
+     * </p>
+     */
+    private void initialiserFiltres() {
+        DataManager dm = DataManager.getInstance();
+
+        // On commande la liste des mentions au cerveau
+        comboMention.getItems().add("Toutes les mentions");
+        comboMention.getItems().addAll(dm.getToutesLesMentions());
+        comboMention.getSelectionModel().selectFirst();
+
+        // On commande la liste des parcours
+        comboParcours.getItems().add("Tous les parcours");
+        comboParcours.getItems().addAll(dm.getTousLesParcours());
+        comboParcours.getSelectionModel().selectFirst();
+
+        // On commande la liste des semestres
+        comboSemestre.getItems().add("Tous les semestres");
+        comboSemestre.getItems().addAll(dm.getTousLesSemestres());
+        comboSemestre.getSelectionModel().selectFirst();
+
+        // Ajout des écouteurs
+        comboMention.setOnAction(event -> appliquerFiltres());
+        comboParcours.setOnAction(event -> appliquerFiltres());
+        comboSemestre.setOnAction(event -> appliquerFiltres());
+    }
+
+    /**
+     * Filtre et met à jour en temps réel la liste des étudiants affichée dans le tableau.
+     * <p>
+     * Cette méthode lit les valeurs actuelles des trois listes déroulantes, délègue le tri
+     * au {@link DataManager}, puis remplace le contenu du tableau par la liste résultante.
+     * </p>
+     */
+    private void appliquerFiltres() {
+        // Le contrôleur demande au cerveau de faire le tri
+        List<Etudiant> etudiantsFiltres = DataManager.getInstance().getEtudiantsFiltres(
+                comboMention.getValue(),
+                comboParcours.getValue(),
+                comboSemestre.getValue()
+        );
+
+        // Puis il affiche le résultat
+        listeEtudiants.setAll(etudiantsFiltres);
     }
 
 
