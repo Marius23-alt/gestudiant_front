@@ -118,35 +118,79 @@ public class DashboardController {
     }
 
     /**
-     * Initialise les listes déroulantes (ComboBox) servant de filtres.
+     * Initialise les listes déroulantes (ComboBox) servant de filtres pour le tableau des étudiants.
      * <p>
-     * Récupère les listes uniques de mentions, parcours et semestres depuis le {@link DataManager}
-     * pour peupler les options. Ajoute également les écouteurs d'événements pour déclencher
-     * le filtrage à chaque sélection de l'utilisateur.
+     * Cette méthode effectue la configuration initiale au chargement de la vue :
+     * <ul>
+     * <li>Elle peuple les listes de Mentions et de Semestres en récupérant les données uniques via le {@link DataManager}.</li>
+     * <li>Elle verrouille (grise) la liste des Parcours par défaut, car son contenu dépend du choix préalable d'une mention.</li>
+     * <li>Elle ajoute des écouteurs d'événements (listeners) pour que chaque changement dans une liste déclenche
+     * dynamiquement la mise à jour des parcours disponibles et le filtrage visuel du tableau.</li>
+     * </ul>
      * </p>
      */
     private void initialiserFiltres() {
         DataManager dm = DataManager.getInstance();
 
-        // On commande la liste des mentions au cerveau
+        // Remplissage de la Mention
         comboMention.getItems().add("Toutes les mentions");
         comboMention.getItems().addAll(dm.getToutesLesMentions());
         comboMention.getSelectionModel().selectFirst();
 
-        // On commande la liste des parcours
+        // Configuration Initiale des Parcours (Désactivé par défaut)
         comboParcours.getItems().add("Tous les parcours");
-        comboParcours.getItems().addAll(dm.getTousLesParcours());
         comboParcours.getSelectionModel().selectFirst();
+        comboParcours.setDisable(true);
 
-        // On commande la liste des semestres
+        // Remplissage des Semestres
         comboSemestre.getItems().add("Tous les semestres");
         comboSemestre.getItems().addAll(dm.getTousLesSemestres());
         comboSemestre.getSelectionModel().selectFirst();
 
-        // Ajout des écouteurs
-        comboMention.setOnAction(event -> appliquerFiltres());
+        // Ajout des écouteurs d'événements
+
+        // Quand on change de mention, on met à jour les parcours puis on filtre le tableau
+        comboMention.setOnAction(event -> {
+            mettreAJourComboParcours();
+            appliquerFiltres();
+        });
+
         comboParcours.setOnAction(event -> appliquerFiltres());
         comboSemestre.setOnAction(event -> appliquerFiltres());
+    }
+
+    /**
+     * Met à jour dynamiquement le contenu et l'état de la liste déroulante des parcours
+     * en fonction de la mention sélectionnée par l'utilisateur.
+     * <p>
+     * Logique de l'interface (UX) :
+     * <ul>
+     * <li>Si l'option "Toutes les mentions" est sélectionnée (ou si rien n'est sélectionné),
+     * la liste des parcours est vidée, bloquée sur "Tous les parcours" et désactivée pour éviter des choix incohérents.</li>
+     * <li>Si une mention spécifique est choisie, la liste est déverrouillée et peuplée
+     * <b>uniquement</b> avec les parcours appartenant à cette mention (récupérés via le {@link DataManager}).</li>
+     * </ul>
+     * </p>
+     */
+    private void mettreAJourComboParcours() {
+        String mentionChoisie = comboMention.getValue();
+
+        // On vide la liste des parcours pour la remettre à zéro
+        comboParcours.getItems().clear();
+        comboParcours.getItems().add("Tous les parcours");
+
+        if (mentionChoisie == null || mentionChoisie.equals("Toutes les mentions")) {
+            // Si "Toutes les mentions", on verrouille les parcours
+            comboParcours.setDisable(true);
+        } else {
+            // Si une mention est choisie, on déverrouille et on va chercher ses parcours
+            comboParcours.setDisable(false);
+            List<String> parcoursDeLaMention = DataManager.getInstance().getParcoursParMention(mentionChoisie);
+            comboParcours.getItems().addAll(parcoursDeLaMention);
+        }
+
+        // On remet la sélection sur "Tous les parcours" (de cette mention) par défaut
+        comboParcours.getSelectionModel().selectFirst();
     }
 
     /**

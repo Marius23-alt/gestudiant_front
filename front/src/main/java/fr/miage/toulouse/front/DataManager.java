@@ -114,6 +114,21 @@ public class DataManager {
                 .toList();
     }
 
+    /**
+     * Extrait et retourne la liste des parcours appartenant UNIQUEMENT à une mention spécifique.
+     *
+     * @param mention Le nom de la mention ciblée.
+     * @return Une liste de {@code String} contenant les noms des parcours de cette mention.
+     */
+    public List<String> getParcoursParMention(String mention) {
+        return listeEtudiants.stream()
+                // On garde que les étudiants de CETTE mention
+                .filter(e -> e.getParcour().getMention().getNom().equals(mention))
+                // On récupère le nom de leur parcours
+                .map(e -> e.getParcour().getNom())
+                .distinct().sorted().toList();
+    }
+
     // --- Getters ---
     /**
      * Retourne la liste complète des étudiants actuellement stockée en mémoire.
