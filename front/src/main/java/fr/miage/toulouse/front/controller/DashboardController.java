@@ -47,26 +47,26 @@ public class DashboardController {
      * </ul>
      * </p>
      */
-    private void initialiserGestionDoubleClic() {
-        tableEtudiants.setRowFactory(tv -> {
-            TableRow<Etudiant> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (!row.isEmpty())) {
-
-                    Etudiant etudiantSelectionne = row.getItem();
-
-                    if (mainController != null) {
-                        System.out.println("Ouverture du profil de : " + etudiantSelectionne.getNom());
-                        mainController.handleProfilEtudiant(etudiantSelectionne);
-                    } else {
-                        System.out.println("Erreur : MainController n'est pas lié !");
-                    }
-                }
-            });
-
-            return row;
-        });
-    }
+//    private void initialiserGestionDoubleClic() {
+//        tableEtudiants.setRowFactory(tv -> {
+//            TableRow<Etudiant> row = new TableRow<>();
+//            row.setOnMouseClicked(event -> {
+//                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+//
+//                    Etudiant etudiantSelectionne = row.getItem();
+//
+//                    if (mainController != null) {
+//                        System.out.println("Ouverture du profil de : " + etudiantSelectionne.getNom());
+//                        mainController.handleProfilEtudiant(etudiantSelectionne);
+//                    } else {
+//                        System.out.println("Erreur : MainController n'est pas lié !");
+//                    }
+//                }
+//            });
+//
+//            return row;
+//        });
+//    }
 
     /**
      * Méthode d'initialisation appelée automatiquement par JavaFX après le chargement du fichier FXML.
@@ -81,19 +81,19 @@ public class DashboardController {
      * </ul>
      * </p>
      */
-    @FXML
-    public void initialize() {
-        colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
-        colNumEtudiant.setCellValueFactory(new PropertyValueFactory<>("numEtudiant"));
-        colParcours.setCellValueFactory(new PropertyValueFactory<>("idParcours"));
-        colMention.setCellValueFactory(new PropertyValueFactory<>("idMention"));
-        colSemestre.setCellValueFactory(new PropertyValueFactory<>("semestreActuel"));
-
-        initialiserGestionDoubleClic();
-
-        chargerTableau();
-    }
+//    @FXML
+//    public void initialize() {
+//        colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+//        colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
+//        colNumEtudiant.setCellValueFactory(new PropertyValueFactory<>("numEtudiant"));
+//        colParcours.setCellValueFactory(new PropertyValueFactory<>("idParcours"));
+//        colMention.setCellValueFactory(new PropertyValueFactory<>("idMention"));
+//        colSemestre.setCellValueFactory(new PropertyValueFactory<>("semestreActuel"));
+//
+//        initialiserGestionDoubleClic();
+//
+//        chargerTableau();
+//    }
 
     /**
      * Charge ou actualise les données du tableau (Dashboard) avec la liste des étudiants.
@@ -108,13 +108,13 @@ public class DashboardController {
      * </ul>
      * </p>
      */
-    private void chargerTableau() {
-
-        listeEtudiants.clear();
-        Request req = new Request();
-        listeEtudiants = req.recupEtudiant();
-
-        tableEtudiants.setItems(listeEtudiants);
-    }
+//    private void chargerTableau() {
+//
+//        listeEtudiants.clear();
+//        Request req = new Request();
+//        listeEtudiants = req.recupEtudiant();
+//
+//        tableEtudiants.setItems(listeEtudiants);
+//    }
 }
 
