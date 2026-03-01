@@ -54,8 +54,8 @@ public class UeController {
 
         // ----- A SUPPRIMER : Fausse données pour pouvoir voir les boutons dans le tableau --------------
         ObservableList<Ue> uesTest = FXCollections.observableArrayList(
-                new Ue("Anglais", "ANGLAIS_1", 3),
-                new Ue("Bases de Données", "BDD_SQL", 6)
+                new Ue("Anglais", "ANGLAIS_1", 3, 4),
+                new Ue("Bases de Données", "BDD_SQL", 6, 5)
         );
         tableUe.setItems(uesTest);
     }
