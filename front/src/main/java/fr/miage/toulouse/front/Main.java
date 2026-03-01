@@ -30,6 +30,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
+            DataManager.getInstance().initialiserDonnees();
+
             // Création de tous les boutons, Menus, StackPane, etc)
             // Création du controleur MainController -> JavaFX voit que le fichier fxml et lié à la class MainController
             // Injecte : Connecte les éléments du FXML aux variables @FXML
@@ -44,7 +46,6 @@ public class Main extends Application {
             primaryStage.setScene(scene);
 
             primaryStage.setMaximized(true);
-
             primaryStage.show();
 
         } catch (Exception e) {

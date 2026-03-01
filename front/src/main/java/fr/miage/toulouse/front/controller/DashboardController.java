@@ -2,6 +2,8 @@ package fr.miage.toulouse.front.controller;
 
 import fr.miage.toulouse.cours.Etudiant;
 import fr.miage.toulouse.database.Request;
+import fr.miage.toulouse.front.DataManager;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,6 +13,7 @@ import javafx.scene.control.TableView;
 
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.util.List;
 
 
 public class DashboardController {
@@ -23,7 +26,6 @@ public class DashboardController {
     @FXML private TableColumn<Etudiant, String> colSemestre;
 
     private ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList();
-
     private MainController mainController;
 
     /**
@@ -34,19 +36,69 @@ public class DashboardController {
         this.mainController = mainController;
     }
 
-    /**
-     * Initialise la gestion du double-clic sur les lignes du tableau des étudiants.
-     * <p>
-     * Cette méthode personnalise le comportement des lignes ({@code TableRow}) du {@code TableView}.
-     * Lorsqu'un utilisateur effectue un double-clic sur une ligne contenant des données, la méthode :
-     * <ul>
-     * <li>Récupère l'objet {@link Etudiant} lié à la ligne sélectionnée.</li>
-     * <li>Délègue l'action au contrôleur principal ({@code MainController}) pour charger
-     * et afficher la vue détaillée du profil de cet étudiant.</li>
-     * <li>Affiche des informations de débogage dans la console pour suivre la navigation.</li>
-     * </ul>
-     * </p>
-     */
+    private void initialiserGestionDoubleClic() {
+        tableEtudiants.setRowFactory(tv -> {
+            TableRow<Etudiant> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    Etudiant etudiantSelectionne = row.getItem();
+                    if (mainController != null) {
+                        System.out.println("Ouverture du profil de : " + etudiantSelectionne.getNom());
+                        mainController.handleProfilEtudiant(etudiantSelectionne);
+                    } else {
+                        System.out.println("Erreur : MainController n'est pas lié !");
+                    }
+                }
+            });
+            return row;
+        });
+    }
+
+    @FXML
+    public void initialize() {
+        // 1. Les variables simples
+        colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
+        colNumEtudiant.setCellValueFactory(new PropertyValueFactory<>("numEtu")); // ⚠️ Corrigé : c'est numEtu maintenant
+        colSemestre.setCellValueFactory(new PropertyValueFactory<>("semestreActuel"));
+
+        // 🌟 2. Les objets imbriqués (La magie opère ici !)
+        // On dit à la colonne d'aller chercher le nom du parcours à l'intérieur de l'objet Parcours
+        colParcours.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getParcour().getNom())
+        );
+
+        // On dit à la colonne d'aller chercher la mention, à l'intérieur du parcours, à l'intérieur de l'étudiant
+        colMention.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getParcour().getMention().getNom())
+        );
+
+        initialiserGestionDoubleClic();
+        chargerTableau();
+    }
+
+    private void chargerTableau() {
+        // 🌟 FINI LES REQUÊTES SQL ICI ! On pioche directement dans le DataManager de manière instantanée
+        List<Etudiant> data = DataManager.getInstance().getListeEtudiants();
+
+        listeEtudiants = FXCollections.observableArrayList(data);
+        tableEtudiants.setItems(listeEtudiants);
+    }
+
+
+//    /**
+//     * Initialise la gestion du double-clic sur les lignes du tableau des étudiants.
+//     * <p>
+//     * Cette méthode personnalise le comportement des lignes ({@code TableRow}) du {@code TableView}.
+//     * Lorsqu'un utilisateur effectue un double-clic sur une ligne contenant des données, la méthode :
+//     * <ul>
+//     * <li>Récupère l'objet {@link Etudiant} lié à la ligne sélectionnée.</li>
+//     * <li>Délègue l'action au contrôleur principal ({@code MainController}) pour charger
+//     * et afficher la vue détaillée du profil de cet étudiant.</li>
+//     * <li>Affiche des informations de débogage dans la console pour suivre la navigation.</li>
+//     * </ul>
+//     * </p>
+//     */
 //    private void initialiserGestionDoubleClic() {
 //        tableEtudiants.setRowFactory(tv -> {
 //            TableRow<Etudiant> row = new TableRow<>();
