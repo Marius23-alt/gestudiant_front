@@ -44,7 +44,7 @@ public class Main extends Application {
             primaryStage.setScene(scene);
 
             primaryStage.setMaximized(true);
-
+            DataManager.getInstance().initialiserDonnees();
             primaryStage.show();
 
         } catch (Exception e) {
