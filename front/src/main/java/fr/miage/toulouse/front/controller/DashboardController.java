@@ -112,8 +112,8 @@ public class DashboardController {
 
         initialiserGestionDoubleClic();
         chargerTableau();
-
         initialiserFiltres();
+        appliquerFiltres();
     }
 
     /**
