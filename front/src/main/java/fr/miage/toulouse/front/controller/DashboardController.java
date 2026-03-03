@@ -42,6 +42,8 @@ public class DashboardController {
     @FXML private PieChart pieChartRepartition;
     @FXML private BarChart<String, Number> barChartEvolution;
 
+    private String texteRecherche = "";
+
     private ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList();
     private MainController mainController;
 
@@ -206,23 +208,55 @@ public class DashboardController {
     }
 
     /**
-     * Filtre et met à jour en temps réel la liste des étudiants affichée dans le tableau.
+     * Définit le texte de recherche global et déclenche instantanément la mise à jour de la vue.
      * <p>
-     * Cette méthode lit les valeurs actuelles des trois listes déroulantes, délègue le tri
-     * au {@link DataManager}, puis remplace le contenu du tableau par la liste résultante.
+     * Cette méthode est sollicitée par le contrôleur principal ({@link MainController})
+     * à chaque nouvelle frappe de l'utilisateur dans la barre de recherche de l'application.
+     * Le texte reçu est converti en minuscules pour garantir un filtrage insensible à la casse
+     * (case-insensitive), puis la méthode {@link #appliquerFiltres()} est invoquée pour
+     * rafraîchir en direct le tableau et les statistiques.
+     * </p>
+     *
+     * @param texte La chaîne de caractères saisie dans la barre de recherche globale.
+     */
+    public void setTexteRecherche(String texte) {
+        this.texteRecherche = texte.toLowerCase();
+        appliquerFiltres();
+    }
+
+    /**
+     * Filtre et met à jour en temps réel la liste des étudiants affichée dans le tableau
+     * ainsi que les statistiques du Dashboard.
+     * <p>
+     * Le processus de filtrage s'effectue en deux étapes (en entonnoir) :
+     * <ol>
+     * <li><b>Filtres globaux :</b> Lit les valeurs actuelles des trois listes déroulantes
+     * (Mention, Parcours, Semestre) et délègue le premier tri au {@link DataManager}.</li>
+     * <li><b>Recherche textuelle :</b> Si un texte a été saisi dans la barre de recherche globale,
+     * affine la liste en conservant uniquement les étudiants dont le nom, le prénom
+     * ou le numéro d'étudiant contient la chaîne saisie (insensible à la casse).</li>
+     * </ol>
+     * </p>
+     * <p>
+     * Une fois la liste finale calculée, cette méthode remplace le contenu du {@code TableView}
+     * et déclenche la mise à jour des graphiques via {@link #mettreAJourStatistiques(List)}.
      * </p>
      */
     private void appliquerFiltres() {
-        // Le contrôleur demande au cerveau de faire le tri
         List<Etudiant> etudiantsFiltres = DataManager.getInstance().getEtudiantsFiltres(
                 comboMention.getValue(),
                 comboParcours.getValue(),
                 comboSemestre.getValue()
         );
 
-        // Puis il affiche le résultat
+        if (texteRecherche != null && !texteRecherche.isEmpty()) {
+            etudiantsFiltres = etudiantsFiltres.stream()
+                    .filter(e -> e.getNom().toLowerCase().contains(texteRecherche)
+                            || e.getPrenom().toLowerCase().contains(texteRecherche)
+                            || String.valueOf(e.getNumEtu()).contains(texteRecherche))
+                    .toList();
+        }
         listeEtudiants.setAll(etudiantsFiltres);
-
         mettreAJourStatistiques(etudiantsFiltres);
     }
 
