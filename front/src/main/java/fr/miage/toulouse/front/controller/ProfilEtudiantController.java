@@ -2,11 +2,37 @@ package fr.miage.toulouse.front.controller;
 
 import fr.miage.toulouse.cours.Etudiant;
 import javafx.fxml.FXML;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Arc;
 import javafx.scene.text.Text;
 
 public class ProfilEtudiantController {
 
+    @FXML private Text textEcts;
+    @FXML private Text textAnneeSemestre; // Ligne 30 de ton FXML (ex: "2025-2026 | Semestre Pair")
+    @FXML private Arc ectsArc;
+
+    @FXML private VBox containerUeEnCours;
+    @FXML private VBox containerUeEchouees;
+    @FXML private VBox containerUeAutorises;
+    @FXML private VBox containerUeValidees;
+
     private Etudiant etudiantCourant;
+    private MainController mainController;
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
+
+    /**
+     * Nettoie les données "en dur" du FXML pour avoir des boîtes vides avant de les remplir dynamiquement.
+     */
+    private void viderConteneurs() {
+        containerUeEnCours.getChildren().clear();
+        containerUeEchouees.getChildren().clear();
+        containerUeAutorises.getChildren().clear();
+        containerUeValidees.getChildren().clear();
+    }
 
     @FXML
     public void initialize() {
@@ -31,6 +57,15 @@ public class ProfilEtudiantController {
         // ICI : Plus tard, tu mettras à jour tes Labels :
         // labelNom.setText(etudiant.getNom());
         // ectsArc.setLength(...);
+    }
+
+    /**
+     * Initialise le profil pour un nouvel étudiant fraîchement créé.
+     * Cette méthode sera codée dans le cadre du Ticket 4.
+     */
+    public void initialiserNouveauProfil(Etudiant etudiant, boolean estImmediat, String semestreChoisi) {
+        // Le code du Ticket 4 viendra ici !
+        System.out.println("Préparation du profil pour le nouvel étudiant : " + etudiant.getNom());
     }
 
     @FXML
