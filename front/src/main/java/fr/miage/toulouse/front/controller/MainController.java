@@ -197,6 +197,40 @@ public class MainController {
     }
 
     /**
+     * Ouvre la page de profil spécifiquement pour un NOUVEL étudiant.
+     * <p>
+     * Cette méthode est appelée par le AjouterEtudiantController juste après l'insertion en BDD.
+     * Elle charge la vue du profil et transmet les paramètres d'amorçage pour que
+     * le ProfilEtudiantController puisse pré-remplir les UE autorisées (Ticket 4).
+     * </p>
+     *
+     * @param etudiant       L'objet Etudiant fraîchement créé.
+     * @param estImmediat    true si l'étudiant commence les cours ce semestre, false pour le prochain.
+     * @param semestreChoisi Le semestre d'entrée choisi (ex: "3").
+     */
+    public void handleProfilNouvelEtudiant(Etudiant etudiant, boolean estImmediat, String semestreChoisi) {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/profilEtudiant.fxml"));
+            Parent view = loader.load();
+
+            ProfilEtudiantController profilCtrl = loader.getController();
+
+            profilCtrl.setMainController(this);
+
+            profilCtrl.initialiserNouveauProfil(etudiant, estImmediat, semestreChoisi);
+
+            contentArea.getChildren().setAll(view);
+
+            titleText.setText("Contrat Pédagogique - " + etudiant.getPrenom() + " " + etudiant.getNom());
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors du chargement du profil étudiant : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Gère l'affichage de la vue dédiée à l'administration du semestre.
      * <p>
      * Cette méthode sollicite la méthode utilitaire {@link #loadView(String, String)}
