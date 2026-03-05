@@ -1,6 +1,7 @@
 package fr.miage.toulouse.front;
 
 import fr.miage.toulouse.cours.Etudiant;
+import fr.miage.toulouse.cours.Ue;
 import fr.miage.toulouse.database.Request;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class DataManager {
     private static DataManager instanceUnique;
 
     private List<Etudiant> listeEtudiants;
+    private List<Ue> listeUe;
 
     /**
      * Constructeur privé pour empêcher l'instanciation directe avec "new".
@@ -26,6 +28,7 @@ public class DataManager {
      */
     private DataManager() {
         this.listeEtudiants = new ArrayList<>();
+        this.listeUe = new ArrayList<>();
     }
 
 
@@ -56,7 +59,10 @@ public class DataManager {
         System.out.println("💾 DataManager : Chargement des données en mémoire...");
         Request req = new Request();
         this.listeEtudiants = req.recupTousLesEtudiants();
+        this.listeUe = req.recupToutesLesUe();
         System.out.println("💾 DataManager : " + this.listeEtudiants.size() + " étudiants chargés en mémoire !");
+        System.out.println("💾 DataManager : " + this.listeUe.size() + " UE chargés en mémoire !");
+
     }
 
     // ------- METHODE POUR LES FILTRES ----------
@@ -111,6 +117,13 @@ public class DataManager {
                 .filter(e -> mention == null || mention.equals("Toutes les mentions") || e.getParcour().getMention().getNom().equals(mention))
                 .filter(e -> parcours == null || parcours.equals("Tous les parcours") || e.getParcour().getNom().equals(parcours))
                 .filter(e -> semestre == null || semestre.equals("Tous les semestres") || String.valueOf(e.getSemestreActuel()).equals(semestre))
+                .toList();
+    }
+    public List<Ue> getUeFiltres(String mention, String parcours, String semestre) {
+        return listeUe.stream()
+                .filter(u -> mention == null || mention.equals("Toutes les mentions") || u.getParcour().getMention().getNom().equals(mention))
+                .filter(u -> parcours == null || parcours.equals("Tous les parcours") || u.getParcour().getNom().equals(parcours))
+                .filter(u -> semestre == null || semestre.equals("Tous les semestres") || String.valueOf(u.getSemestre()).equals(semestre))
                 .toList();
     }
 
