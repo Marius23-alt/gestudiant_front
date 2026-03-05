@@ -119,6 +119,7 @@ public class DataManager {
                 .filter(e -> semestre == null || semestre.equals("Tous les semestres") || String.valueOf(e.getSemestreActuel()).equals(semestre))
                 .toList();
     }
+
     public List<Ue> getUeFiltres(String mention, String parcours, String semestre) {
         return listeUe.stream()
                 .filter(u -> mention == null || mention.equals("Toutes les mentions") || u.getParcour().getMention().getNom().equals(mention))
