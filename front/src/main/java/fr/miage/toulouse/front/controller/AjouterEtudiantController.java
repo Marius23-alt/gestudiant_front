@@ -1,12 +1,10 @@
 package fr.miage.toulouse.front.controller;
 
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import fr.miage.toulouse.database.Request;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
-import javafx.scene.control.DatePicker;
+
 import java.time.LocalDate;
 
 import javafx.event.ActionEvent;
@@ -20,6 +18,9 @@ public class AjouterEtudiantController {
     @FXML private ComboBox<String> comboMention;
     @FXML private ComboBox<String> comboParcours;
     @FXML private ComboBox<String> comboSemestre;
+    @FXML private RadioButton radioImmediat;
+    @FXML private RadioButton radioDiffere;
+    @FXML private ToggleGroup groupeEffet;
 
     /**
      * Méthode d'initialisation appelée automatiquement par JavaFX après le chargement du fichier FXML.
