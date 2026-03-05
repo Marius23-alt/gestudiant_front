@@ -59,6 +59,16 @@ public class DataManager {
         System.out.println("💾 DataManager : " + this.listeEtudiants.size() + " étudiants chargés en mémoire !");
     }
 
+
+    /**
+     * Ajoute un étudiant fraîchement créé à la liste en mémoire.
+     */
+    public void ajouterEtudiantMemoire(Etudiant e) {
+        this.listeEtudiants.add(e);
+        System.out.println("🧠 DataManager : " + e.getNom() + " ajouté en mémoire !");
+    }
+
+
     // ------- METHODE POUR LES FILTRES ----------
 
     /**
