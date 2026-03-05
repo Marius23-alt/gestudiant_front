@@ -182,18 +182,35 @@ public class MainController {
     }
 
     /**
-     * Gère le changement de vue vers le formulaire d'ajout d'un étudiant.
+     * Gère l'affichage de la vue dédiée au formulaire d'ajout d'un étudiant.
      * <p>
-     * Cette méthode fait appel à la méthode utilitaire {@link #loadView(String, String)}
-     * pour charger le fichier FXML correspondant à l'inscription et mettre à jour
-     * le titre de l'application. C'est une navigation dite "simple" car elle ne
-     * nécessite pas d'interaction directe avec le contrôleur de la vue chargée.
+     * Contrairement à une navigation classique, cette méthode effectue un chargement manuel
+     * du fichier FXML afin de pouvoir établir une communication entre les contrôleurs :
+     * <ul>
+     * <li><b>Chargement de la vue :</b> Instancie l'interface de création et met à jour le titre principal.</li>
+     * <li><b>Injection de dépendance :</b> Récupère le {@link AjouterEtudiantController} généré et lui
+     * transmet l'instance actuelle ({@code this}) du {@code MainController}.</li>
+     * <li><b>Objectif :</b> Cette liaison est absolument indispensable. Elle permet au formulaire d'ajout
+     * d'ordonner au {@code MainController} de déclencher une redirection automatique vers la page
+     * de profil une fois l'étudiant inséré en base de données.</li>
+     * </ul>
      * </p>
      */
     @FXML
     private void handleAjouterEtudiant() {
         setActiveButton(btnAjouter);
-        loadView("ajouterEtudiant.fxml", "Inscription Étudiant");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ajouterEtudiant.fxml"));
+            Parent view = loader.load();
+
+            AjouterEtudiantController ajouterCtrl = loader.getController();
+            ajouterCtrl.setMainController(this);
+
+            contentArea.getChildren().setAll(view);
+            titleText.setText("Inscription Étudiant");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

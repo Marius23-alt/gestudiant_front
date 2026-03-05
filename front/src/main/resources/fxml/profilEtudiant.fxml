@@ -15,7 +15,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background: #D3D3D3;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.front.controller.ProfilEtudiantController">    <content>
+<ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background: #D3D3D3;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.front.controller.ProfilEtudiantController">    <content>
         <HBox alignment="TOP_CENTER" spacing="30.0" style="-fx-background-color: #D3D3D3;">
             <padding>
                 <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
@@ -41,7 +41,7 @@
                                     </children>
                                 </StackPane>
 
-                                <Text fill="#2da10d" strokeType="OUTSIDE" strokeWidth="0.0" text="ECTS : 45/180">
+                                <Text fx:id="textEcts" fill="#2da10d" strokeType="OUTSIDE" strokeWidth="0.0" text="ECTS : 45/180">
                                     <font>
                                         <Font name="System Bold" size="16.0" />
                                     </font>
@@ -49,7 +49,7 @@
 
                                 <Region HBox.hgrow="ALWAYS" />
 
-                                <Button onAction="#handleModifierProfil" mnemonicParsing="false" style="-fx-background-color: #6c757d; -fx-background-radius: 20; -fx-cursor: hand;" text="Modifier profil" textFill="WHITE">
+                                <Button mnemonicParsing="false" onAction="#handleModifierProfil" style="-fx-background-color: #6c757d; -fx-background-radius: 20; -fx-cursor: hand;" text="Modifier profil" textFill="WHITE">
                                     <font>
                                         <Font name="System Bold" size="12.0" />
                                     </font>
@@ -63,7 +63,7 @@
 
                             </children>
                         </HBox>
-                        <Text fill="#575757" strokeType="OUTSIDE" strokeWidth="0.0" text="2025-2026 | Semestre Pair">
+                        <Text fx:id="textAnneeSemestre" fill="#575757" strokeType="OUTSIDE" strokeWidth="0.0" text="2025-2026 | Semestre Pair">
                             <font>
                                 <Font name="System Bold" size="20.0" />
                             </font>
