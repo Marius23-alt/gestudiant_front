@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
+import java.util.List;
+import fr.miage.toulouse.front.DataManager;
 
 public class UeController {
     @FXML private ComboBox<Mention> comboMention;
@@ -47,23 +49,19 @@ public class UeController {
      */
     @FXML
     public void initialize() {
-        lblTitreUe.setText("Page de gestion des UE (En travaux 🚧)");
+        lblTitreUe.setText("Page de gestion des UE");
 
-        // Acceptation des boutons dans le tableau
+        // Configuration des colonnes (noms + boutons d'action)
         configurerColonnesTableau();
 
-        // 1. On crée une Mention et un Parcours fictifs pour remplir le 5ème paramètre
-        Mention mentionTest = new Mention(1, "Informatique");
-        Parcour parcourTest = new Parcour(1, "Développement Logiciel", mentionTest);
+        // 1. On récupère la VRAIE liste des UEs depuis la mémoire vive de l'application
+        List<Ue> vraiesUes = DataManager.getInstance().getListeUes();
 
-        // 2. On crée la liste d'UEs avec le bon constructeur : (code, nom, nbCredit, semestre, parcour)
-        ObservableList<Ue> uesTest = FXCollections.observableArrayList(
-                new Ue("ANG_S1", "Anglais", 3, 1, parcourTest),
-                new Ue("BDD_SQL", "Bases de Données", 6, 2, parcourTest),
-                new Ue("JAVA_POO", "Programmation Orientée Objet", 6, 3, parcourTest),
-                new Ue("DWEB_S1", "Développement Web", 3, 4, parcourTest)
-        );
-        tableUe.setItems(uesTest);
+        // 2. On transforme cette liste Java classique en ObservableList pour JavaFX
+        ObservableList<Ue> uesData = FXCollections.observableArrayList(vraiesUes);
+
+        // 3. On affecte les données directement au tableau
+        tableUe.setItems(uesData);
     }
 
 
