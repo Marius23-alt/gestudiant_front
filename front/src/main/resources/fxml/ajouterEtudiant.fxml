@@ -10,6 +10,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
 
 <?import javafx.scene.control.DatePicker?>
 <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.front.controller.AjouterEtudiantController">
@@ -29,6 +32,7 @@
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="250.0" />
             </columnConstraints>
             <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
@@ -55,8 +59,22 @@
 
                 <Text text="Parcours :" GridPane.rowIndex="5" />
                 <ComboBox fx:id="comboParcours" prefWidth="200.0" promptText="Choisir parcours" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <Text text="Semestre :" GridPane.rowIndex="6" />
-            <ComboBox fx:id="comboSemestre" prefWidth="200.0" promptText="Choisir semestre" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+                <Text text="Semestre :" GridPane.rowIndex="6" />
+                <ComboBox fx:id="comboSemestre" prefWidth="200.0" promptText="Choisir semestre" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+                <Text text="Prise d'effet :" GridPane.rowIndex="7" />
+                <HBox alignment="CENTER_LEFT" spacing="15.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                    <children>
+                        <RadioButton fx:id="radioImmediat" mnemonicParsing="false" selected="true" text="Immédiatement">
+                            <toggleGroup>
+                                <ToggleGroup fx:id="groupeEffet" />
+                            </toggleGroup>
+                        </RadioButton>
+                        <RadioButton fx:id="radioDiffere" mnemonicParsing="false" text="Semestre suivant" toggleGroup="$groupeEffet" />
+                    </children>
+                </HBox>
+
             </children>
             <padding>
                 <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
