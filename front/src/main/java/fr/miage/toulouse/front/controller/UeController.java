@@ -52,10 +52,16 @@ public class UeController {
         // Acceptation des boutons dans le tableau
         configurerColonnesTableau();
 
-        // ----- A SUPPRIMER : Fausse données pour pouvoir voir les boutons dans le tableau --------------
+        // 1. On crée une Mention et un Parcours fictifs pour remplir le 5ème paramètre
+        Mention mentionTest = new Mention(1, "Informatique");
+        Parcour parcourTest = new Parcour(1, "Développement Logiciel", mentionTest);
+
+        // 2. On crée la liste d'UEs avec le bon constructeur : (code, nom, nbCredit, semestre, parcour)
         ObservableList<Ue> uesTest = FXCollections.observableArrayList(
-                new Ue("Anglais", "ANGLAIS_1", 3, 4),
-                new Ue("Bases de Données", "BDD_SQL", 6, 5)
+                new Ue("ANG_S1", "Anglais", 3, 1, parcourTest),
+                new Ue("BDD_SQL", "Bases de Données", 6, 2, parcourTest),
+                new Ue("JAVA_POO", "Programmation Orientée Objet", 6, 3, parcourTest),
+                new Ue("DWEB_S1", "Développement Web", 3, 4, parcourTest)
         );
         tableUe.setItems(uesTest);
     }
