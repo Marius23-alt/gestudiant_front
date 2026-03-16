@@ -162,4 +162,12 @@ public class DataManager {
     public List<Etudiant> getListeEtudiants() {
         return listeEtudiants;
     }
+
+    /**
+     * Retourne la liste complète des UEs actuellement stockée en mémoire.
+     */
+    public List<Ue> getListeUes() {
+        return listeUe;
+    }
 }
+

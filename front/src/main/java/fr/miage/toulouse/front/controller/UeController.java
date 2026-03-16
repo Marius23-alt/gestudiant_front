@@ -9,11 +9,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
+import java.util.List;
+import fr.miage.toulouse.front.DataManager;
 
 public class UeController {
-    @FXML private ComboBox<Mention> comboMention;
-    @FXML private ComboBox<Parcour> comboParcours;
+    @FXML private ComboBox<String> comboMention;
+    @FXML private ComboBox<String> comboParcours;
     @FXML private ComboBox<String> comboSemestre;
+
+    // La liste qui mettra à jour le tableau en temps réel
+    private ObservableList<Ue> listeUesAffichables = FXCollections.observableArrayList();
 
     @FXML private Label lblTitreUe;
 
@@ -47,23 +52,16 @@ public class UeController {
      */
     @FXML
     public void initialize() {
-        lblTitreUe.setText("Page de gestion des UE (En travaux 🚧)");
+        lblTitreUe.setText("Page de gestion des UE");
 
-        // Acceptation des boutons dans le tableau
+        // Configuration des colonnes (noms + boutons d'action)
         configurerColonnesTableau();
 
-        // 1. On crée une Mention et un Parcours fictifs pour remplir le 5ème paramètre
-        Mention mentionTest = new Mention(1, "Informatique");
-        Parcour parcourTest = new Parcour(1, "Développement Logiciel", mentionTest);
+        // On prépare les listes déroulantes
+        initialiserFiltres();
 
-        // 2. On crée la liste d'UEs avec le bon constructeur : (code, nom, nbCredit, semestre, parcour)
-        ObservableList<Ue> uesTest = FXCollections.observableArrayList(
-                new Ue("ANG_S1", "Anglais", 3, 1, parcourTest),
-                new Ue("BDD_SQL", "Bases de Données", 6, 2, parcourTest),
-                new Ue("JAVA_POO", "Programmation Orientée Objet", 6, 3, parcourTest),
-                new Ue("DWEB_S1", "Développement Web", 3, 4, parcourTest)
-        );
-        tableUe.setItems(uesTest);
+        // On applique les filtres une première fois pour remplir le tableau
+        appliquerFiltres();
     }
 
 
@@ -130,5 +128,74 @@ public class UeController {
             }
         };
         colonne.setCellFactory(cellFactory);
+    }
+
+    /**
+     * Initialise les valeurs par défaut des ComboBox et leurs écouteurs d'événements.
+     */
+    private void initialiserFiltres() {
+        DataManager dm = DataManager.getInstance();
+
+        // 1. Remplissage de la Mention
+        comboMention.getItems().clear();
+        comboMention.getItems().add("Toutes les mentions");
+        comboMention.getItems().addAll(dm.getToutesLesMentions());
+        comboMention.getSelectionModel().selectFirst();
+
+        // 2. Configuration Initiale des Parcours (Désactivé par défaut)
+        comboParcours.getItems().clear();
+        comboParcours.getItems().add("Tous les parcours");
+        comboParcours.getSelectionModel().selectFirst();
+        comboParcours.setDisable(true);
+
+        // 3. Remplissage des Semestres (Pour les UEs, ça va de 1 à 6)
+        comboSemestre.getItems().clear();
+        comboSemestre.getItems().add("Tous les semestres");
+        comboSemestre.getItems().addAll("1", "2", "3", "4", "5", "6");
+        comboSemestre.getSelectionModel().selectFirst();
+
+        // 4. Ajout des actions lors d'un clic
+        comboMention.setOnAction(event -> {
+            mettreAJourComboParcours();
+            appliquerFiltres();
+        });
+
+        comboParcours.setOnAction(event -> appliquerFiltres());
+        comboSemestre.setOnAction(event -> appliquerFiltres());
+    }
+
+    /**
+     * Déverrouille et remplit les parcours en fonction de la mention choisie.
+     */
+    private void mettreAJourComboParcours() {
+        String mentionChoisie = comboMention.getValue();
+
+        comboParcours.getItems().clear();
+        comboParcours.getItems().add("Tous les parcours");
+
+        if (mentionChoisie == null || mentionChoisie.equals("Toutes les mentions")) {
+            comboParcours.setDisable(true);
+        } else {
+            comboParcours.setDisable(false);
+            comboParcours.getItems().addAll(DataManager.getInstance().getParcoursParMention(mentionChoisie));
+        }
+
+        comboParcours.getSelectionModel().selectFirst();
+    }
+
+    /**
+     * Récupère les bons filtres, interroge le DataManager, et met à jour le tableau.
+     */
+    private void appliquerFiltres() {
+        String mention = comboMention.getValue();
+        String parcours = comboParcours.getValue();
+        String semestre = comboSemestre.getValue();
+
+        // On appelle la méthode que tu avais déjà préparée dans DataManager !
+        List<Ue> uesFiltrees = DataManager.getInstance().getUeFiltres(mention, parcours, semestre);
+
+        // On met à jour l'affichage
+        listeUesAffichables.setAll(uesFiltrees);
+        tableUe.setItems(listeUesAffichables);
     }
 }
