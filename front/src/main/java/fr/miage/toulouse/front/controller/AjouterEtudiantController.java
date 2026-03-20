@@ -21,9 +21,7 @@ public class AjouterEtudiantController {
     @FXML private ComboBox<String> comboMention;
     @FXML private ComboBox<String> comboParcours;
     @FXML private ComboBox<String> comboSemestre;
-    @FXML private RadioButton radioImmediat;
-    @FXML private RadioButton radioDiffere;
-    @FXML private ToggleGroup groupeEffet;
+
 
     private MainController mainController;
 
@@ -113,14 +111,13 @@ public class AjouterEtudiantController {
                 // 5. Ajout dans la mémoire vive
                 DataManager.getInstance().ajouterEtudiantMemoire(nouvelEtudiant);
 
-                boolean estImmediat = radioImmediat.isSelected();
                 String semestreChoisiStr = comboSemestre.getValue();
 
                 System.out.println("✅ Redirection vers le profil de " + nom);
 
                 // 6. Redirection vers le Profil
                 if (mainController != null) {
-                    mainController.handleProfilNouvelEtudiant(nouvelEtudiant, estImmediat, semestreChoisiStr);
+                    mainController.handleProfilNouvelEtudiant(nouvelEtudiant, semestreChoisiStr);
                 }
             } else {
                 afficherAlerte("Erreur BDD", "L'étudiant n'a pas pu être inséré. (Ce numéro étudiant existe peut-être déjà ?)", Alert.AlertType.ERROR);
