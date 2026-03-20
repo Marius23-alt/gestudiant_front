@@ -1,12 +1,13 @@
 package fr.miage.toulouse.front.controller;
 
-import javafx.scene.control.Alert;
+import fr.miage.toulouse.cours.Etudiant;
+import fr.miage.toulouse.cours.Parcour;
+import fr.miage.toulouse.front.DataManager;
+import javafx.scene.control.*;
 import fr.miage.toulouse.database.Request;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
-import javafx.scene.control.DatePicker;
+
 import java.time.LocalDate;
 
 import javafx.event.ActionEvent;
@@ -20,6 +21,15 @@ public class AjouterEtudiantController {
     @FXML private ComboBox<String> comboMention;
     @FXML private ComboBox<String> comboParcours;
     @FXML private ComboBox<String> comboSemestre;
+    @FXML private RadioButton radioImmediat;
+    @FXML private RadioButton radioDiffere;
+    @FXML private ToggleGroup groupeEffet;
+
+    private MainController mainController;
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
 
     /**
      * Méthode d'initialisation appelée automatiquement par JavaFX après le chargement du fichier FXML.
@@ -36,69 +46,92 @@ public class AjouterEtudiantController {
      */
     @FXML
     public void initialize(){
-//        Request req = new Request();
-////        List<String> listeMentions = req.recupMentions();
-//
-//        comboParcours.setDisable(true);
-//        comboSemestre.getItems().addAll("1", "2", "3", "4", "5", "6");
-//
-////        if (listeMentions != null) {
-////            System.out.println("Succès : " + listeMentions.size() + " mentions trouvées dans la BD !");
-////            comboMention.getItems().addAll(listeMentions);
-////        } else {
-////            System.out.println("Erreur : La liste des mentions est NULL !");
-////        }
-//
-//        comboMention.getSelectionModel().selectedItemProperty().addListener((obs, ancienneValeur, nouvelleValeur) -> {
-//
-//            if (nouvelleValeur != null){
-//                comboParcours.setDisable(false);
-//                comboParcours.getItems().clear();
-//
-//                List<String> nouveauxParcours = req.recupParcoursParMention(nouvelleValeur);
-//                if (nouveauxParcours != null) {
-//                    comboParcours.getItems().addAll(nouveauxParcours);
-//                }
-//            }
-//        });
+        // 1. Remplissage des semestres
+        comboSemestre.getItems().addAll("1", "2", "3", "4", "5", "6");
+        comboSemestre.getSelectionModel().selectFirst();
+
+        // 2. Remplissage des mentions depuis le DataManager
+        comboMention.getItems().addAll(DataManager.getInstance().getToutesLesMentions());
+
+        // 3. Verrouillage initial du parcours
+        comboParcours.setDisable(true);
+
+        // 4. Écouteur : Quand on choisit une mention, on débloque et on remplit les parcours
+        comboMention.valueProperty().addListener((obs, ancienneValeur, nouvelleValeur) -> {
+            if (nouvelleValeur != null){
+                comboParcours.setDisable(false);
+                comboParcours.getItems().clear();
+                comboParcours.getItems().addAll(DataManager.getInstance().getParcoursParMention(nouvelleValeur));
+            }
+        });
     }
 
     /**
      * A faire et revoir la méthode concernant les objets
      */
     @FXML
-    public void handleValider(ActionEvent event) {
-//        String numero = fieldNumeroEtudiant.getText();
-//        String prenom = fieldPrenom.getText();
-//        String nom = fieldNom.getText();
-//        String nomParcours = comboParcours.getValue();
-//        String semestre = comboSemestre.getValue();
-//        LocalDate dateNaissance = pickerDate.getValue();
-//
-//        if (numero.isEmpty() || prenom.isEmpty() || nom.isEmpty() || nomParcours == null || dateNaissance == null || semestre == null) {
-//            afficherAlerte("Erreur", "Veuillez remplir tous les champs obligatoires.", Alert.AlertType.ERROR);
-//            return;
-//        }
-//
-//        Request req = new Request();
-//
-//        String idParcours = req.recupIdParcours(nomParcours);
-//        String dateMySQL = dateNaissance.toString();
-//
-//        if (idParcours != null) {
-//            boolean ajoutReussi = req.ajouterEtudiant(numero, nom, prenom, dateMySQL, idParcours, semestre);
-//            if (ajoutReussi) {
-//                afficherAlerte("Succès", "L'étudiant " + prenom + " " + nom + " a bien été ajouté !", Alert.AlertType.INFORMATION);
-//                fieldNumeroEtudiant.clear();
-//                fieldNom.clear();
-//                fieldPrenom.clear();
-//                pickerDate.setValue(null);
-//            } else {
-//                afficherAlerte("Erreur", "L'ajout a échoué. Cet étudiant existe peut-être déjà ou les informations sont incorrectes.", Alert.AlertType.ERROR);
-//            }
-//        } else {
-//            afficherAlerte("Erreur serveur", "Impossible de trouver l'identifiant de ce parcours.", Alert.AlertType.ERROR);
-//        }
+    private void handleValider() {
+        try {
+            // 1. Vérification basique des champs
+            if (fieldNumeroEtudiant.getText().isEmpty() || fieldNom.getText().isEmpty() ||
+                    comboParcours.getValue() == null || pickerDate.getValue() == null) {
+                afficherAlerte("Champs manquants", "Veuillez remplir tous les champs obligatoires.", Alert.AlertType.WARNING);
+                return;
+            }
+
+            int numEtu = Integer.parseInt(fieldNumeroEtudiant.getText());
+            String nom = fieldNom.getText();
+            String prenom = fieldPrenom.getText();
+            LocalDate dateNaiss = pickerDate.getValue();
+            int semestreChoisiInt = Integer.parseInt(comboSemestre.getValue());
+
+            // 2. Retrouver l'OBJET Parcour à partir de son nom (String)
+            String nomParcoursChoisi = comboParcours.getValue();
+            Parcour parcoursChoisi = null;
+
+            // On fouille dans la mémoire pour trouver un étudiant qui a ce parcours et on lui "vole" l'objet Parcours
+            for (Etudiant e : DataManager.getInstance().getListeEtudiants()) {
+                if (e.getParcour().getNom().equals(nomParcoursChoisi)) {
+                    parcoursChoisi = e.getParcour();
+                    break;
+                }
+            }
+
+            if (parcoursChoisi == null) {
+                afficherAlerte("Erreur", "Impossible de retrouver l'objet Parcours associé.", Alert.AlertType.ERROR);
+                return;
+            }
+
+            // 3. Création de l'étudiant avec les 7 paramètres requis par ton constructeur !
+            // (Nouveau venu = semestre choisi, et 0 ECTS pour l'instant)
+            Etudiant nouvelEtudiant = new Etudiant(numEtu, nom, prenom, dateNaiss, parcoursChoisi, semestreChoisiInt, 0);
+
+            // 4. Sauvegarde en BDD
+            Request req = new Request();
+            if (req.ajouterEtudiant(nouvelEtudiant)) {
+
+                // 5. Ajout dans la mémoire vive
+                DataManager.getInstance().ajouterEtudiantMemoire(nouvelEtudiant);
+
+                boolean estImmediat = radioImmediat.isSelected();
+                String semestreChoisiStr = comboSemestre.getValue();
+
+                System.out.println("✅ Redirection vers le profil de " + nom);
+
+                // 6. Redirection vers le Profil
+                if (mainController != null) {
+                    mainController.handleProfilNouvelEtudiant(nouvelEtudiant, estImmediat, semestreChoisiStr);
+                }
+            } else {
+                afficherAlerte("Erreur BDD", "L'étudiant n'a pas pu être inséré. (Ce numéro étudiant existe peut-être déjà ?)", Alert.AlertType.ERROR);
+            }
+
+        } catch (NumberFormatException e) {
+            afficherAlerte("Erreur de saisie", "Le numéro étudiant doit être un nombre valide.", Alert.AlertType.ERROR);
+        } catch (Exception e) {
+            afficherAlerte("Erreur", "Une erreur inattendue est survenue : " + e.getMessage(), Alert.AlertType.ERROR);
+            e.printStackTrace();
+        }
     }
 
 
@@ -117,11 +150,11 @@ public class AjouterEtudiantController {
      * @param type    Le style visuel de l'alerte (ex: {@code Alert.AlertType.ERROR} ou
      * {@code Alert.AlertType.INFORMATION}), qui définit l'icône affichée.
      */
-//    private void afficherAlerte(String titre, String message, Alert.AlertType type) {
-//        Alert alert = new Alert(type);
-//        alert.setTitle(titre);
-//        alert.setHeaderText(null);
-//        alert.setContentText(message);
-//        alert.showAndWait();
-//    }
+    private void afficherAlerte(String titre, String message, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }

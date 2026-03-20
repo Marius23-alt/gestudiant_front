@@ -19,6 +19,8 @@ import java.util.logging.Logger;
 public class MainController {
     private static final Logger LOGGER = Logger.getLogger(MainController.class.getName());
 
+    private DashboardController dashboardController;
+
     // --- VARIABLES DE L'INTERFACE ---
 
     @FXML
@@ -45,34 +47,58 @@ public class MainController {
     private Button activeButton;
 
     /**
-     * Méthode d'initialisation du contrôleur principal, appelée automatiquement par JavaFX.
+     * Méthode d'initialisation du contrôleur principal, appelée automatiquement par JavaFX au démarrage.
      * <p>
-     * Son rôle est de définir l'état initial de l'interface dès l'ouverture de l'application.
-     * Elle appelle {@link #handleDashboard()} pour que le tableau de bord soit chargé et
-     * affiché par défaut dans la zone de contenu, évitant ainsi à l'utilisateur de se
-     * retrouver face à une interface vide au démarrage.
+     * Son rôle est de définir l'état initial de l'interface et de configurer les interactions globales :
+     * <ul>
+     * <li><b>Vue par défaut :</b> Elle appelle {@link #handleDashboard()} pour charger et afficher
+     * le tableau de bord dès l'ouverture de l'application, évitant ainsi à l'utilisateur de se
+     * retrouver face à un écran vide.</li>
+     * <li><b>Recherche globale dynamique :</b> Elle met en place un écouteur (listener) sur la barre
+     * de recherche ({@code searchField}). À chaque nouvelle frappe de l'utilisateur :
+     * <ul>
+     * <li>Si la vue active n'est pas le Dashboard, l'application y bascule automatiquement.</li>
+     * <li>Le texte saisi est immédiatement transmis au {@link DashboardController} via sa méthode
+     * {@code setTexteRecherche} pour déclencher un filtrage en temps réel.</li>
+     * </ul>
+     * </li>
+     * </ul>
      * </p>
      */
     @FXML
-    public void initialize() { handleDashboard(); }
+    public void initialize() {
+        handleDashboard();
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (activeButton != btnStat) {
+                handleDashboard();
+            }
+            if (dashboardController != null) {
+                dashboardController.setTexteRecherche(newValue);
+            }
+        });
+    }
 
     //------- NAVIGATION ---------
 
     /**
-     * Gère l'affichage de la vue "Tableau de Bord" (Dashboard).
+     * Gère l'affichage et l'initialisation de la vue "Tableau de Bord" (Dashboard).
      * <p>
-     * Cette méthode va plus loin qu'un simple chargement de vue : elle établit une
-     * connexion entre les contrôleurs. Elle récupère l'instance du {@link DashboardController}
-     * créée par le {@link FXMLLoader} et lui injecte une référence du contrôleur
-     * principal ({@code this}).
-     * </p>
-     * <p>
-     * Cette liaison est indispensable pour permettre au Dashboard de déléguer
-     * des actions de navigation (comme l'ouverture d'un profil étudiant) au {@code MainController}.
+     * Cette méthode va bien au-delà d'un simple changement d'écran, elle effectue plusieurs opérations essentielles :
+     * <ul>
+     * <li><b>Optimisation :</b> Vérifie si le Dashboard est déjà la vue active pour éviter un rechargement inutile (anti-clignotement).</li>
+     * <li><b>Chargement :</b> Lit le fichier FXML et l'intègre dans la zone d'affichage principale en mettant à jour le titre.</li>
+     * <li><b>Liaison inter-contrôleurs :</b> Injecte une référence de ce {@code MainController} dans le {@link DashboardController} pour autoriser la navigation (ex: ouverture d'un profil étudiant).</li>
+     * <li><b>Mémorisation :</b> Sauvegarde l'instance du {@link DashboardController} en mémoire pour pouvoir lui transmettre dynamiquement le texte tapé dans la barre de recherche.</li>
+     * <li><b>Recherche persistante :</b> Si un texte est déjà présent dans la barre de recherche globale au moment de l'ouverture, il est immédiatement transmis au Dashboard pour filtrer le tableau.</li>
+     * </ul>
      * </p>
      */
     @FXML
     private void handleDashboard() {
+        if (activeButton == btnStat && !contentArea.getChildren().isEmpty()) {
+            return;
+        }
+
         setActiveButton(btnStat);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dashboard.fxml"));
@@ -81,8 +107,14 @@ public class MainController {
             DashboardController dashboardCtrl = loader.getController();
             dashboardCtrl.setMainController(this);
 
+            this.dashboardController = dashboardCtrl;
+
             contentArea.getChildren().setAll(view);
             titleText.setText("Tableau de Bord");
+
+            if (!searchField.getText().isEmpty()) {
+                dashboardController.setTexteRecherche(searchField.getText());
+            }
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Erreur chargement dashboard : {}", e.getMessage());
@@ -150,18 +182,69 @@ public class MainController {
     }
 
     /**
-     * Gère le changement de vue vers le formulaire d'ajout d'un étudiant.
+     * Gère l'affichage de la vue dédiée au formulaire d'ajout d'un étudiant.
      * <p>
-     * Cette méthode fait appel à la méthode utilitaire {@link #loadView(String, String)}
-     * pour charger le fichier FXML correspondant à l'inscription et mettre à jour
-     * le titre de l'application. C'est une navigation dite "simple" car elle ne
-     * nécessite pas d'interaction directe avec le contrôleur de la vue chargée.
+     * Contrairement à une navigation classique, cette méthode effectue un chargement manuel
+     * du fichier FXML afin de pouvoir établir une communication entre les contrôleurs :
+     * <ul>
+     * <li><b>Chargement de la vue :</b> Instancie l'interface de création et met à jour le titre principal.</li>
+     * <li><b>Injection de dépendance :</b> Récupère le {@link AjouterEtudiantController} généré et lui
+     * transmet l'instance actuelle ({@code this}) du {@code MainController}.</li>
+     * <li><b>Objectif :</b> Cette liaison est absolument indispensable. Elle permet au formulaire d'ajout
+     * d'ordonner au {@code MainController} de déclencher une redirection automatique vers la page
+     * de profil une fois l'étudiant inséré en base de données.</li>
+     * </ul>
      * </p>
      */
     @FXML
     private void handleAjouterEtudiant() {
         setActiveButton(btnAjouter);
-        loadView("ajouterEtudiant.fxml", "Inscription Étudiant");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ajouterEtudiant.fxml"));
+            Parent view = loader.load();
+
+            AjouterEtudiantController ajouterCtrl = loader.getController();
+            ajouterCtrl.setMainController(this);
+
+            contentArea.getChildren().setAll(view);
+            titleText.setText("Inscription Étudiant");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Ouvre la page de profil spécifiquement pour un NOUVEL étudiant.
+     * <p>
+     * Cette méthode est appelée par le AjouterEtudiantController juste après l'insertion en BDD.
+     * Elle charge la vue du profil et transmet les paramètres d'amorçage pour que
+     * le ProfilEtudiantController puisse pré-remplir les UE autorisées (Ticket 4).
+     * </p>
+     *
+     * @param etudiant       L'objet Etudiant fraîchement créé.
+     * @param estImmediat    true si l'étudiant commence les cours ce semestre, false pour le prochain.
+     * @param semestreChoisi Le semestre d'entrée choisi (ex: "3").
+     */
+    public void handleProfilNouvelEtudiant(Etudiant etudiant, boolean estImmediat, String semestreChoisi) {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/profilEtudiant.fxml"));
+            Parent view = loader.load();
+
+            ProfilEtudiantController profilCtrl = loader.getController();
+
+            profilCtrl.setMainController(this);
+
+            profilCtrl.initialiserNouveauProfil(etudiant, estImmediat, semestreChoisi);
+
+            contentArea.getChildren().setAll(view);
+
+            titleText.setText("Contrat Pédagogique - " + etudiant.getPrenom() + " " + etudiant.getNom());
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors du chargement du profil étudiant : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
