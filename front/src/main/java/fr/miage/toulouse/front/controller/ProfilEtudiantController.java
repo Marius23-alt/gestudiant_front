@@ -109,7 +109,7 @@ public class ProfilEtudiantController {
 
                 String nomUe = inscr.getUe().getNom();
                 String annee = inscr.getAnnee();
-                String semestre = "S" + inscr.getSemestre();
+                String semestre = "S" + inscr.getUe().getSemestre();
 
                 // On dispatche l'affichage dans la bonne VBox selon le statut de l'inscription
                 switch (inscr.getStatut().toLowerCase()) {

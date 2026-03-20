@@ -18,6 +18,9 @@ import java.util.List;
  */
 public class DataManager {
     private static DataManager instanceUnique;
+    // --- TEMPORALITÉ GLOBALE DE L'UNIVERSITÉ ---
+    private String anneeUniversitaireCourante;
+    private boolean isSemestreImpair;
 
     private List<Etudiant> listeEtudiants;
     private List<Ue> listeUe;
@@ -59,14 +62,16 @@ public class DataManager {
         System.out.println("💾 DataManager : Chargement des données en mémoire...");
         Request req = new Request();
 
+        String[] config = req.recupConfigurationGlobale();
+        this.anneeUniversitaireCourante = config[0];
+        this.isSemestreImpair = Boolean.parseBoolean(config[1]);
+        System.out.println("🕒 DataManager : Horloge réglée sur l'année " + anneeUniversitaireCourante + " (Semestre Impair : " + isSemestreImpair + ")");
+
         this.listeEtudiants = req.recupTousLesEtudiants();
         this.listeUe = req.recupToutesLesUe();
 
-        // 🌟 NOUVEAU : On relie les étudiants et les UEs grâce aux inscriptions !
+        // On relie les étudiants et les UEs
         req.lierInscriptionsEnMemoire(this.listeEtudiants, this.listeUe);
-
-        System.out.println("💾 DataManager : " + this.listeEtudiants.size() + " étudiants chargés en mémoire !");
-        System.out.println("💾 DataManager : " + this.listeUe.size() + " UE chargés en mémoire !");
     }
 
 
@@ -80,6 +85,20 @@ public class DataManager {
 
 
     // ------- METHODE POUR LES FILTRES ----------
+
+    public String getAnneeUniversitaireCourante() {
+        return anneeUniversitaireCourante;
+    }
+
+    /**
+     * Indique si l'université est actuellement sur un semestre impair (Automne: S1, S3, S5)
+     * ou pair (Printemps: S2, S4, S6).
+     * @return true si semestre impair, false si semestre pair.
+     */
+    public boolean isSemestreImpair() {
+        return isSemestreImpair;
+    }
+
 
     /**
      * Extrait et retourne la liste de toutes les mentions uniques existantes.
