@@ -57,10 +57,9 @@ public class ProfilEtudiantController {
      * </p>
      *
      * @param etudiant       L'objet {@link Etudiant} fraîchement inséré en base de données et en mémoire.
-     * @param estImmediat    {@code true} si la prise d'effet des inscriptions est immédiate (rejoint le semestre en cours), {@code false} pour le semestre suivant.
      * @param semestreChoisi Le numéro du semestre d'entrée sélectionné dans le formulaire (ex: "3").
      */
-    public void initialiserNouveauProfil(Etudiant etudiant, boolean estImmediat, String semestreChoisi) {
+    public void initialiserNouveauProfil(Etudiant etudiant, String semestreChoisi) {
         this.etudiantCourant = etudiant;
 
         viderConteneurs();
