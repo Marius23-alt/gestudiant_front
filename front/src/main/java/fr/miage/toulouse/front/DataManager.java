@@ -58,11 +58,15 @@ public class DataManager {
     public void initialiserDonnees() {
         System.out.println("💾 DataManager : Chargement des données en mémoire...");
         Request req = new Request();
+
         this.listeEtudiants = req.recupTousLesEtudiants();
         this.listeUe = req.recupToutesLesUe();
+
+        // 🌟 NOUVEAU : On relie les étudiants et les UEs grâce aux inscriptions !
+        req.lierInscriptionsEnMemoire(this.listeEtudiants, this.listeUe);
+
         System.out.println("💾 DataManager : " + this.listeEtudiants.size() + " étudiants chargés en mémoire !");
         System.out.println("💾 DataManager : " + this.listeUe.size() + " UE chargés en mémoire !");
-
     }
 
 

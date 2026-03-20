@@ -1,6 +1,7 @@
 package fr.miage.toulouse.front.controller;
 
 import fr.miage.toulouse.cours.Etudiant;
+import fr.miage.toulouse.cours.Inscription;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -84,10 +85,7 @@ public class ProfilEtudiantController {
     /**
      * Initialise la vue avec les informations de l'étudiant sélectionné.
      * Cette méthode est appelée par le contrôleur principal (MainController)
-     * juste après le chargement de la vue. Elle permet de :
-     * - Récupérer l'objet (Etudiant) transféré depuis le tableau de bord
-     * - Stocker cet étudiant pour des opérations futures (ex: modification)
-     * - Déclencher la mise à jour de l'affichage (remplissage des textes, jauge ECTS, listes d'UE)
+     * juste après le chargement de la vue.
      *
      * @param etudiant L'objet (Etudiant) contenant les données à afficher (nom, notes, parcours, etc.).
      */
@@ -96,9 +94,51 @@ public class ProfilEtudiantController {
 
         System.out.println("Profil chargé pour : " + etudiant.getNom() + " " + etudiant.getPrenom());
 
-        // ICI : Plus tard, tu mettras à jour tes Labels :
-        // labelNom.setText(etudiant.getNom());
-        // ectsArc.setLength(...);
+        // 1. On vide les fausses données écrites en dur dans le fichier FXML
+        viderConteneurs();
+
+        // 2. On met à jour les informations globales (ECTS et Semestre)
+        if (textEcts != null) textEcts.setText("ECTS : " + etudiant.getNbEcts() + "/180");
+        if (textAnneeSemestre != null) textAnneeSemestre.setText("Semestre Actuel : S" + etudiant.getSemestreActuel());
+
+        if (ectsArc != null) ectsArc.setLength((double) etudiant.getNbEcts() * 2);
+
+        // 3. On parcourt les vraies inscriptions de l'étudiant pour les classer
+        if (etudiant.getInscription() != null) {
+            for (Inscription inscr : etudiant.getInscription()) {
+
+                String nomUe = inscr.getUe().getNom();
+                String annee = inscr.getAnnee();
+                String semestre = "S" + inscr.getSemestre();
+
+                // On dispatche l'affichage dans la bonne VBox selon le statut de l'inscription
+                switch (inscr.getStatut().toLowerCase()) {
+                    case "valide":
+                        containerUeValidees.getChildren().add(creerLigneUe(nomUe, annee, semestre, "Validée", "#28a745"));
+                        break;
+                    case "en_cours":
+                        containerUeEnCours.getChildren().add(creerLigneUe(nomUe, annee, semestre, "En cours", "#007bff"));
+                        break;
+                    case "echoue":
+                        containerUeEchouees.getChildren().add(creerLigneUe(nomUe, annee, semestre, "Échouée", "#dc3545"));
+                        break;
+                }
+            }
+        }
+
+        // 4. Si une boîte est vide après le tri, on ajoute un petit message indicatif
+        if (containerUeEnCours.getChildren().isEmpty()) {
+            containerUeEnCours.getChildren().add(new Label("Aucune UE en cours."));
+        }
+        if (containerUeValidees.getChildren().isEmpty()) {
+            containerUeValidees.getChildren().add(new Label("Aucune UE validée."));
+        }
+        if (containerUeEchouees.getChildren().isEmpty()) {
+            containerUeEchouees.getChildren().add(new Label("Aucun échec."));
+        }
+
+        // Pour les UEs autorisées, on met un texte temporaire avant d'attaquer la logique complexe
+        containerUeAutorises.getChildren().add(new Label("Calcul des UE autorisées en cours de développement..."));
     }
 
     /**
