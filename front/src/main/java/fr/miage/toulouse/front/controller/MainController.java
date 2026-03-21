@@ -2,6 +2,7 @@ package fr.miage.toulouse.front.controller;
 
 
 import fr.miage.toulouse.cours.Etudiant;
+import fr.miage.toulouse.cours.Ue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -157,26 +158,41 @@ public class MainController {
      * <p>
      * Cette méthode est généralement appelée par un contrôleur enfant (comme {@link UeController}).
      * Elle charge la vue générique {@code saisieMasse.fxml} et établit la liaison bidirectionnelle
-     * en injectant le {@code MainController} dans le {@link SaisieMasseController}.
+     * en injectant le {@code MainController} dans le {@link SaisieMasseValideController}.
      * Cela permet notamment au bouton "Retour" de la nouvelle vue de fonctionner correctement.
      * </p>
      */
     @FXML
-    public void handleSaisieMasse() {
+    public void handleSaisieMasseInscription(Ue ue) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/saisieMasse.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SaisieMasseInscription.fxml"));
             Parent view = loader.load();
 
-            // On passe le MainController à la page de Saisie pour que le bouton Retour fonctionne !
-            SaisieMasseController saisieCtrl = loader.getController();
+            SaisieMasseInscriptionController saisieCtrl = loader.getController();
             saisieCtrl.setMainController(this);
 
             contentArea.getChildren().setAll(view);
-            // Le titre sera modifié dynamiquement plus tard
-            titleText.setText("Saisie de Masse");
+            titleText.setText("Inscription en masse");
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Erreur chargement Saisie Masse : {}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Erreur chargement Saisie Masse Inscription : {}", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void handleSaisieMasseValide(Ue ue) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SaisieMasseValide.fxml"));
+            Parent view = loader.load();
+
+            SaisieMasseValideController saisieCtrl = loader.getController();
+            saisieCtrl.setMainController(this);
+
+            contentArea.getChildren().setAll(view);
+            titleText.setText("Validation en masse");
+
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Erreur chargement Saisie Masse Valide : {}", e.getMessage());
             e.printStackTrace();
         }
     }
