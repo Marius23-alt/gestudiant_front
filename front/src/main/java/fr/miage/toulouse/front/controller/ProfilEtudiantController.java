@@ -15,7 +15,9 @@ import javafx.scene.shape.Arc;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import fr.miage.toulouse.database.Request;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProfilEtudiantController {
@@ -31,6 +33,7 @@ public class ProfilEtudiantController {
 
     private Etudiant etudiantCourant;
     private MainController mainController;
+    private List<Inscription> inscriptionsEnAttente = new ArrayList<>();
 
     @FXML
     public void initialize() {
@@ -245,14 +248,96 @@ public class ProfilEtudiantController {
         Button btnInscrire = new Button("Inscrire");
         btnInscrire.setStyle("-fx-background-color: #ffc107; -fx-background-radius: 8; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
 
-        // Ce qu'il se passera quand on cliquera sur "Inscrire" (on fera la BDD plus tard)
         btnInscrire.setOnAction(event -> {
-            System.out.println("Bouton Inscrire cliqué pour : " + ue.getNom());
-            // TODO: Ajouter l'inscription en base de données et rafraîchir la page
+            System.out.println("Ajout au brouillon pour : " + ue.getNom());
+
+            // 1. On crée le ticket d'inscription (sans toucher à la BDD !)
+            Inscription nouvelleInscription = new Inscription(etudiantCourant, ue, annee, "en_cours");
+
+            // 2. On met à jour la mémoire Java
+            etudiantCourant.ajouterInscription(nouvelleInscription);
+            ue.ajouterInscription(nouvelleInscription);
+
+            // 3. 🌟 On ajoute au "Panier" pour plus tard !
+            inscriptionsEnAttente.add(nouvelleInscription);
+
+            // 4. On rafraîchit l'écran (la matière va glisser dans la boîte bleue)
+            setEtudiant(etudiantCourant);
         });
 
         hbox.getChildren().addAll(lblNom, btnInscrire);
         return hbox;
+    }
+
+    /**
+     * Valide le brouillon et envoie tout à la base de données.
+     */
+    @FXML
+    public void handleEnregistrer() {
+        if (inscriptionsEnAttente.isEmpty()) {
+            System.out.println("Aucune modification à enregistrer.");
+            return;
+        }
+
+        fr.miage.toulouse.database.Request req = new fr.miage.toulouse.database.Request();
+        int compteur = 0;
+
+        // On vide le panier dans la base de données
+        for (Inscription inscr : inscriptionsEnAttente) {
+            boolean succes = req.ajouterInscitption(inscr.getEtudiant().getNumEtu(), inscr.getUe().getCode(), inscr.getAnnee());
+            if (succes) {
+                compteur++;
+            }
+        }
+
+        System.out.println("💾 Succès : " + compteur + " inscriptions sauvegardées en BDD !");
+
+        // On vide le panier puisqu'on a sauvegardé
+        inscriptionsEnAttente.clear();
+    }
+
+    /**
+     * "Ctrl+Z" : Annule UNIQUEMENT la dernière inscription ajoutée au brouillon.
+     */
+    @FXML
+    public void handleAnnulerDernier() {
+        if (inscriptionsEnAttente.isEmpty()) return;
+
+        // 1. On trouve l'index de la toute dernière action (la fin de la liste)
+        int indexDernier = inscriptionsEnAttente.size() - 1;
+        Inscription derniereAction = inscriptionsEnAttente.get(indexDernier);
+
+        // 2. On retire cette action précise de la mémoire de l'étudiant et de l'UE
+        etudiantCourant.getInscription().remove(derniereAction);
+        derniereAction.getUe().getInscription().remove(derniereAction);
+
+        // 3. On la retire de notre panier
+        inscriptionsEnAttente.remove(indexDernier);
+
+        // 4. On rafraîchit l'écran
+        setEtudiant(etudiantCourant);
+        System.out.println("↩️ Dernière action annulée.");
+    }
+
+    /**
+     * "Reset" : Annule TOUTES les modifications en attente.
+     */
+    @FXML
+    public void handleAnnulerTout() {
+        if (inscriptionsEnAttente.isEmpty()) return;
+
+        // On retire absolument toutes les fausses inscriptions de la mémoire
+        for (Inscription inscr : inscriptionsEnAttente) {
+            etudiantCourant.getInscription().remove(inscr);
+            inscr.getUe().getInscription().remove(inscr);
+        }
+
+        // On vide le panier complet
+        inscriptionsEnAttente.clear();
+
+        // On rafraîchit l'écran
+        setEtudiant(etudiantCourant);
+        System.out.println("🗑️ Toutes les modifications ont été annulées.");
     }
 
     // A FAIRE
