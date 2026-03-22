@@ -200,6 +200,11 @@ public class ProfilEtudiantController {
                 .map(inscr -> inscr.getUe().getCode())
                 .toList();
 
+        List<String> codesEchouesCetteAnnee = etudiant.getInscription().stream()
+                .filter(inscr -> inscr.getStatut().equals("echoue") && inscr.getAnnee().equals(anneeCourante))
+                .map(inscr -> inscr.getUe().getCode())
+                .toList();
+
         // 3. LE GRAND FILTRE
         List<Ue> uesAutorisees = toutesLesUes.stream()
                 // A. L'UE doit faire partie de son parcours
@@ -208,8 +213,10 @@ public class ProfilEtudiantController {
                 // B. L'UE doit correspondre à la saison actuelle (Automne=Impair, Printemps=Pair)
                 .filter(ue -> (ue.getSemestre() % 2 != 0) == isSemestreGlobalImpair)
 
-                // C. L'étudiant ne doit pas l'avoir déjà validée, ni l'avoir en cours
-                .filter(ue -> !codesValides.contains(ue.getCode()) && !codesEnCours.contains(ue.getCode()))
+                // C. L'étudiant ne doit pas l'avoir déjà validée, ni l'avoir en cours, NI l'avoir échouée cette année !
+                .filter(ue -> !codesValides.contains(ue.getCode())
+                        && !codesEnCours.contains(ue.getCode())
+                        && !codesEchouesCetteAnnee.contains(ue.getCode()))
 
                 // D. LA RÈGLE DE L'UE PRÉCÉDENTE
                 .filter(ue -> {
