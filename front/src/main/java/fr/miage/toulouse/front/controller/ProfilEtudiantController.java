@@ -15,7 +15,9 @@ import javafx.scene.shape.Arc;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import fr.miage.toulouse.database.Request;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProfilEtudiantController {
@@ -31,6 +33,8 @@ public class ProfilEtudiantController {
 
     private Etudiant etudiantCourant;
     private MainController mainController;
+    private List<Inscription> inscriptionsEnAttente = new ArrayList<>();
+    private List<Inscription> changementsStatutEnAttente = new ArrayList<>();
 
     @FXML
     public void initialize() {
@@ -96,6 +100,10 @@ public class ProfilEtudiantController {
     public void setEtudiant(Etudiant etudiant) {
         this.etudiantCourant = etudiant;
 
+        if (this.mainController != null) {
+            this.mainController.setTitrePage("Profil de " + etudiant.getNom() + " " + etudiant.getPrenom());
+        }
+
         System.out.println("Profil chargé pour : " + etudiant.getNom() + " " + etudiant.getPrenom());
 
         // 1. On vide les fausses données écrites en dur dans le fichier FXML
@@ -121,7 +129,7 @@ public class ProfilEtudiantController {
                         containerUeValidees.getChildren().add(creerLigneUe(nomUe, annee, semestre, "Validée", "#28a745"));
                         break;
                     case "en_cours":
-                        containerUeEnCours.getChildren().add(creerLigneUe(nomUe, annee, semestre, "En cours", "#007bff"));
+                        containerUeEnCours.getChildren().add(creerLigneUeEnCours(inscr));
                         break;
                     case "echoue":
                         containerUeEchouees.getChildren().add(creerLigneUe(nomUe, annee, semestre, "Échouée", "#dc3545"));
@@ -245,19 +253,192 @@ public class ProfilEtudiantController {
         Button btnInscrire = new Button("Inscrire");
         btnInscrire.setStyle("-fx-background-color: #ffc107; -fx-background-radius: 8; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
 
-        // Ce qu'il se passera quand on cliquera sur "Inscrire" (on fera la BDD plus tard)
         btnInscrire.setOnAction(event -> {
-            System.out.println("Bouton Inscrire cliqué pour : " + ue.getNom());
-            // TODO: Ajouter l'inscription en base de données et rafraîchir la page
+            System.out.println("Ajout au brouillon pour : " + ue.getNom());
+
+            // 1. On crée le ticket d'inscription (sans toucher à la BDD !)
+            Inscription nouvelleInscription = new Inscription(etudiantCourant, ue, annee, "en_cours");
+
+            // 2. On met à jour la mémoire Java
+            etudiantCourant.ajouterInscription(nouvelleInscription);
+            ue.ajouterInscription(nouvelleInscription);
+
+            // 3. 🌟 On ajoute au "Panier" pour plus tard !
+            inscriptionsEnAttente.add(nouvelleInscription);
+
+            // 4. On rafraîchit l'écran (la matière va glisser dans la boîte bleue)
+            setEtudiant(etudiantCourant);
         });
 
         hbox.getChildren().addAll(lblNom, btnInscrire);
         return hbox;
     }
 
-    // A FAIRE
-    @FXML
-    private void handleModifierProfil() {
-        System.out.println("Clic sur modifier");
+    /**
+     * Crée une ligne pour une UE en cours avec les boutons Valider (Vert) et Échouer (Rouge).
+     */
+    private HBox creerLigneUeEnCours(Inscription inscr) {
+        HBox hbox = new HBox();
+        hbox.setAlignment(Pos.CENTER_LEFT);
+        hbox.setSpacing(10);
+
+        String texteLigne = inscr.getUe().getNom() + " - " + inscr.getAnnee() + " - S" + inscr.getUe().getSemestre();
+        Label labelUe = new Label(texteLigne);
+        labelUe.setTextFill(javafx.scene.paint.Color.web("#575757"));
+        labelUe.setFont(Font.font("System", FontWeight.BOLD, 13));
+        labelUe.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(labelUe, Priority.ALWAYS);
+
+        Button btnValider = new Button("Valider");
+        btnValider.setStyle("-fx-background-color: #28a745; -fx-background-radius: 8; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
+        btnValider.setOnAction(e -> {
+            inscr.setStatut("valide");
+            if (!changementsStatutEnAttente.contains(inscr)) {
+                changementsStatutEnAttente.add(inscr);
+            }
+            setEtudiant(etudiantCourant);
+        });
+
+
+        Button btnEchouer = new Button("Échouer");
+        btnEchouer.setStyle("-fx-background-color: #dc3545; -fx-background-radius: 8; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
+        btnEchouer.setOnAction(e -> {
+            inscr.setStatut("echoue");
+            if (!changementsStatutEnAttente.contains(inscr)) {
+                changementsStatutEnAttente.add(inscr);
+            }
+            setEtudiant(etudiantCourant);
+        });
+
+        hbox.getChildren().addAll(labelUe, btnValider, btnEchouer);
+        return hbox;
     }
+
+    /**
+     * Valide le brouillon et envoie tout à la base de données.
+     */
+    /**
+     * Valide le brouillon (Nouvelles inscriptions + Changements de notes) et envoie tout à la BDD.
+     */
+    @FXML
+    public void handleEnregistrer() {
+        if (inscriptionsEnAttente.isEmpty() && changementsStatutEnAttente.isEmpty()) {
+            System.out.println("Aucune modification à enregistrer.");
+            return;
+        }
+
+        fr.miage.toulouse.database.Request req = new fr.miage.toulouse.database.Request();
+        int compteur = 0;
+
+        // 1. Sauvegarde des nouvelles inscriptions
+        for (Inscription inscr : inscriptionsEnAttente) {
+            boolean succes = req.ajouterInscitption(inscr.getEtudiant().getNumEtu(), inscr.getUe().getCode(), inscr.getAnnee());
+            if (succes) compteur++;
+        }
+
+        // 2. Sauvegarde des changements de statuts (Valider / Echouer)
+        for (Inscription inscrModifiee : changementsStatutEnAttente) {
+            boolean succes = req.modifierStatutInscription(
+                    inscrModifiee.getEtudiant().getNumEtu(),
+                    inscrModifiee.getUe().getCode(),
+                    inscrModifiee.getAnnee(),
+                    inscrModifiee.getStatut()
+            );
+            if (succes) compteur++;
+        }
+
+        System.out.println("💾 Succès : " + compteur + " modifications sauvegardées en BDD !");
+
+        // On vide les deux paniers
+        inscriptionsEnAttente.clear();
+        changementsStatutEnAttente.clear();
+    }
+
+    /**
+     * "Ctrl+Z" : Annule la dernière action effectuée.
+     */
+    @FXML
+    public void handleAnnulerDernier() {
+        if (inscriptionsEnAttente.isEmpty() && changementsStatutEnAttente.isEmpty()) return;
+
+        // S'il y a des nouvelles inscriptions dans le panier, on annule la dernière
+        if (!inscriptionsEnAttente.isEmpty()) {
+            int index = inscriptionsEnAttente.size() - 1;
+            Inscription derniereAction = inscriptionsEnAttente.get(index);
+
+            etudiantCourant.getInscription().remove(derniereAction);
+            derniereAction.getUe().getInscription().remove(derniereAction);
+            inscriptionsEnAttente.remove(index);
+
+            System.out.println("↩️ Dernière inscription annulée.");
+        }
+        // Sinon, s'il y a des changements de statut, on annule le dernier changement
+        else if (!changementsStatutEnAttente.isEmpty()) {
+            int index = changementsStatutEnAttente.size() - 1;
+            Inscription derniereAction = changementsStatutEnAttente.get(index);
+
+            derniereAction.setStatut("en_cours");
+            changementsStatutEnAttente.remove(index);
+
+            System.out.println("↩️ Dernier changement de statut annulé.");
+        }
+
+        // On rafraîchit l'écran
+        setEtudiant(etudiantCourant);
+    }
+
+    /**
+     * "Reset" : Annule TOUTES les modifications en attente (Inscriptions ET Statuts).
+     */
+    @FXML
+    public void handleAnnulerTout() {
+        // 🌟 CORRECTION : On vérifie les deux paniers
+        if (inscriptionsEnAttente.isEmpty() && changementsStatutEnAttente.isEmpty()) return;
+
+        // 1. Annuler les nouvelles inscriptions
+        for (Inscription inscr : inscriptionsEnAttente) {
+            etudiantCourant.getInscription().remove(inscr);
+            inscr.getUe().getInscription().remove(inscr);
+        }
+        inscriptionsEnAttente.clear();
+
+        // 2. Annuler les modifications de statut
+        for (Inscription inscrModifiee : changementsStatutEnAttente) {
+            inscrModifiee.setStatut("en_cours"); // On remet l'état de départ
+        }
+        changementsStatutEnAttente.clear();
+
+        // On rafraîchit l'écran
+        setEtudiant(etudiantCourant);
+        System.out.println("🗑️ Toutes les modifications ont été annulées.");
+    }
+
+    /**
+     * Gère le clic sur le bouton Modifier le profil en ouvrant une Pop-up
+     */
+    @FXML
+    public void handleModifierProfil() {
+        try {
+            // On charge le fichier visuel de la pop-up
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/fxml/modifierProfil.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            // On envoie l'étudiant actuel au contrôleur de la pop-up
+            fr.miage.toulouse.front.controller.ModifierProfilController controller = loader.getController();
+            controller.initData(etudiantCourant, this);
+
+            // On crée la fenêtre et on l'affiche
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.setTitle("Modifier Profil");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL); // Rend la fenêtre principale floue/inaccessible tant que la pop-up est ouverte
+            stage.showAndWait();
+
+        } catch (java.io.IOException e) {
+            System.err.println("❌ Erreur lors de l'ouverture de la fenêtre : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
 }

@@ -228,12 +228,46 @@
                                                 </Button>
                                             </children>
                                         </HBox>
+
                                     </children>
+
                                 </VBox>
 
                             </children>
                         </VBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                            <padding>
+                                <Insets top="10.0" />
+                            </padding>
+                            <children>
+                                <Button mnemonicParsing="false" onAction="#handleAnnulerTout" style="-fx-background-color: #6c757d; -fx-background-radius: 8; -fx-cursor: hand;" text="Tout effacer" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                    <padding>
+                                        <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
+                                    </padding>
+                                </Button>
 
+                                <Button mnemonicParsing="false" onAction="#handleAnnulerDernier" style="-fx-background-color: #dc3545; -fx-background-radius: 8; -fx-cursor: hand;" text="Annuler la dernière" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                    <padding>
+                                        <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
+                                    </padding>
+                                </Button>
+
+                                <Button mnemonicParsing="false" onAction="#handleEnregistrer" style="-fx-background-color: #28a745; -fx-background-radius: 8; -fx-cursor: hand;" text="Enregistrer" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                    <padding>
+                                        <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
+                                    </padding>
+                                </Button>
+                            </children>
+                        </HBox>
                     </children>
                 </VBox>
 
