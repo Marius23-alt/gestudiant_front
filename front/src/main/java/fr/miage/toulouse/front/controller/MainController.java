@@ -222,10 +222,9 @@ public class MainController {
      * </p>
      *
      * @param etudiant       L'objet Etudiant fraîchement créé.
-     * @param estImmediat    true si l'étudiant commence les cours ce semestre, false pour le prochain.
      * @param semestreChoisi Le semestre d'entrée choisi (ex: "3").
      */
-    public void handleProfilNouvelEtudiant(Etudiant etudiant, boolean estImmediat, String semestreChoisi) {
+    public void handleProfilNouvelEtudiant(Etudiant etudiant, String semestreChoisi) {
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/profilEtudiant.fxml"));
@@ -235,7 +234,7 @@ public class MainController {
 
             profilCtrl.setMainController(this);
 
-            profilCtrl.initialiserNouveauProfil(etudiant, estImmediat, semestreChoisi);
+            profilCtrl.initialiserNouveauProfil(etudiant, semestreChoisi);
 
             contentArea.getChildren().setAll(view);
 
@@ -285,7 +284,7 @@ public class MainController {
             Parent view = loader.load();
 
             ProfilEtudiantController profilCtrl = loader.getController();
-
+            profilCtrl.setMainController(this);
             profilCtrl.setEtudiant(etudiant);
 
             contentArea.getChildren().setAll(view);
@@ -398,6 +397,15 @@ public class MainController {
 
         clickedButton.setStyle("-fx-background-color: rgba(255, 255, 255, 0.1); -fx-background-radius: 10;");
         activeButton = clickedButton;
+    }
+
+    /**
+     * Permet aux autres pages de modifier le grand titre bleu en haut.
+     */
+    public void setTitrePage(String titre) {
+        if (titleText != null) {
+            titleText.setText(titre);
+        }
     }
 
 }
