@@ -258,7 +258,18 @@ public class MainController {
     @FXML
     private void handleAdminSemestre() {
         setActiveButton(btnAdmin);
-        loadView("adminSemestre.fxml", "Administration du Semestre");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/adminSemestre.fxml"));
+            Parent view = loader.load();
+
+            AdminSemestreController adminCtrl = loader.getController();
+            adminCtrl.setMainController(this);
+
+            contentArea.getChildren().setAll(view);
+            titleText.setText("Administration du Semestre");
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

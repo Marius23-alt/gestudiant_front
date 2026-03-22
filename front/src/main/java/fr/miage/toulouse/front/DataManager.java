@@ -219,5 +219,15 @@ public class DataManager {
         }
         return etuEnCours;
     }
+
+    //SETTER
+
+    public void setAnneeUniversitaireCourante(String anneeUniversitaireCourante){
+        this.anneeUniversitaireCourante = anneeUniversitaireCourante;
+    }
+
+    public void setSemestreImpair(Boolean semestreImpair){
+        this.isSemestreImpair = semestreImpair;
+    }
 }
 
