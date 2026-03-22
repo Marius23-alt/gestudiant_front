@@ -284,7 +284,7 @@ public class MainController {
             Parent view = loader.load();
 
             ProfilEtudiantController profilCtrl = loader.getController();
-
+            profilCtrl.setMainController(this);
             profilCtrl.setEtudiant(etudiant);
 
             contentArea.getChildren().setAll(view);
@@ -397,6 +397,15 @@ public class MainController {
 
         clickedButton.setStyle("-fx-background-color: rgba(255, 255, 255, 0.1); -fx-background-radius: 10;");
         activeButton = clickedButton;
+    }
+
+    /**
+     * Permet aux autres pages de modifier le grand titre bleu en haut.
+     */
+    public void setTitrePage(String titre) {
+        if (titleText != null) {
+            titleText.setText(titre);
+        }
     }
 
 }

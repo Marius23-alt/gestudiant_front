@@ -100,6 +100,10 @@ public class ProfilEtudiantController {
     public void setEtudiant(Etudiant etudiant) {
         this.etudiantCourant = etudiant;
 
+        if (this.mainController != null) {
+            this.mainController.setTitrePage("Profil de " + etudiant.getNom() + " " + etudiant.getPrenom());
+        }
+
         System.out.println("Profil chargé pour : " + etudiant.getNom() + " " + etudiant.getPrenom());
 
         // 1. On vide les fausses données écrites en dur dans le fichier FXML
@@ -408,12 +412,33 @@ public class ProfilEtudiantController {
         setEtudiant(etudiantCourant);
         System.out.println("🗑️ Toutes les modifications ont été annulées.");
     }
+
     /**
-     * Gère le clic sur le bouton Modifier le profil (À développer plus tard)
+     * Gère le clic sur le bouton Modifier le profil en ouvrant une Pop-up
      */
     @FXML
     public void handleModifierProfil() {
-        System.out.println("✏️ Clic sur Modifier le profil");
-        // TODO: Ajouter la logique pour ouvrir un formulaire de modification
+        try {
+            // On charge le fichier visuel de la pop-up
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/fxml/modifierProfil.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            // On envoie l'étudiant actuel au contrôleur de la pop-up
+            fr.miage.toulouse.front.controller.ModifierProfilController controller = loader.getController();
+            controller.initData(etudiantCourant, this);
+
+            // On crée la fenêtre et on l'affiche
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.setTitle("Modifier Profil");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL); // Rend la fenêtre principale floue/inaccessible tant que la pop-up est ouverte
+            stage.showAndWait();
+
+        } catch (java.io.IOException e) {
+            System.err.println("❌ Erreur lors de l'ouverture de la fenêtre : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+
+
 }
