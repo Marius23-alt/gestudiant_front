@@ -1,6 +1,7 @@
 package fr.miage.toulouse.front;
 
 import fr.miage.toulouse.cours.Etudiant;
+import fr.miage.toulouse.cours.Inscription;
 import fr.miage.toulouse.cours.Ue;
 import fr.miage.toulouse.database.Request;
 
@@ -191,6 +192,42 @@ public class DataManager {
      */
     public List<Ue> getListeUes() {
         return listeUe;
+    }
+
+
+    /**
+     * Retourne une liste d'étudiants selon des paramètres de filtrage qui ont au moins une ue en cours
+     * @param mention la mention de filtrage
+     * @param parcours le parcours de filtarge
+     * @param semestre le semestre de filtrage
+     * @return une liste d'étudiants qui ont une UE en cours
+     */
+    public List<Etudiant> getEtudiantEnCours(String mention, String parcours, String semestre) {
+
+        List<Etudiant> etuEnCours = new ArrayList<>();
+
+        List<Etudiant> etudiants = getEtudiantsFiltres(mention, parcours, semestre);
+
+        for (Etudiant e : etudiants) {
+            for (Inscription i : e.getInscription()) {
+                if (i.getStatut().equals("en_cours")) {
+                    etuEnCours.add(e);
+                    // éviter les doublons si il y a plusieurs ue en cours
+                    break;
+                }
+            }
+        }
+        return etuEnCours;
+    }
+
+    //SETTER
+
+    public void setAnneeUniversitaireCourante(String anneeUniversitaireCourante){
+        this.anneeUniversitaireCourante = anneeUniversitaireCourante;
+    }
+
+    public void setSemestreImpair(Boolean semestreImpair){
+        this.isSemestreImpair = semestreImpair;
     }
 }
 
