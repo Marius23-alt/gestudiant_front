@@ -321,9 +321,7 @@ public class ProfilEtudiantController {
         return hbox;
     }
 
-    /**
-     * Valide le brouillon et envoie tout à la base de données.
-     */
+
     /**
      * Valide le brouillon (Nouvelles inscriptions + Changements de notes) et envoie tout à la BDD.
      */

@@ -12,8 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -104,15 +102,11 @@ public class AdminSemestreController {
             if (newVal != null) chargerDonneesTableau();
         });
         comboSemestre.valueProperty().addListener((obs, oldVal, newVal) -> chargerDonneesTableau());
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> chargerDonneesTableau());        comboParcours.valueProperty().addListener((obs, oldVal, newVal) -> chargerDonneesTableau());
-
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> chargerDonneesTableau());
         // 5. Premier chargement des données
         chargerDonneesTableau();
     }
 
-    /**
-     * Charge les étudiants dans le tableau en utilisant la logique de ton collègue
-     */
     /**
      * Charge les étudiants dans le tableau en utilisant la logique de ton collègue
      */
