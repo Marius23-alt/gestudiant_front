@@ -71,6 +71,9 @@ public class DataManager {
         this.listeEtudiants = req.recupTousLesEtudiants();
         this.listeUe = req.recupToutesLesUe();
 
+        System.out.println(this.listeEtudiants.size() + " étudiants chargés");
+        System.out.println(this.listeUe.size() + " UE chargées");
+
         // On relie les étudiants et les UEs
         req.lierInscriptionsEnMemoire(this.listeEtudiants, this.listeUe);
     }
@@ -218,6 +221,19 @@ public class DataManager {
             }
         }
         return etuEnCours;
+    }
+
+    public List<Etudiant> getEtudiantsInscritsA(Ue ueSelectionne) {
+        List<Etudiant> resultat = new ArrayList<>();
+
+        for (Etudiant e : this.listeEtudiants){
+            for (Inscription i : e.getInscription()){
+                if (i.getUe().equals(ueSelectionne) && i.getStatut().equals("en_cours")){
+                    resultat.add(e);
+                }
+            }
+        }
+        return resultat;
     }
 
     //SETTER
