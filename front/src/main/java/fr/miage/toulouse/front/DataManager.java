@@ -236,6 +236,20 @@ public class DataManager {
         return resultat;
     }
 
+    public List<Etudiant> getEudiantsAutoriséA(Ue ueSelectionne){
+        List<Etudiant> resultat = new ArrayList<>();
+
+        resultat.add(new Etudiant(2, "bidule", "chose", null, null, 1, 0));
+        resultat.add(new Etudiant(3, "machin", "truc", null, null, 1, 0));
+
+
+        for (Etudiant e : this.listeEtudiants){
+            //ajouter tous les étudiants autorisé à faire ueSelectionne à resultat. S'inspirer méthode avant
+
+        }
+        return resultat;
+    }
+
     //SETTER
 
     public void setAnneeUniversitaireCourante(String anneeUniversitaireCourante){

@@ -60,8 +60,6 @@ public class SaisieMasseValideController {
 
         List<Etudiant> etudiants = DataManager.getInstance().getEtudiantsInscritsA(this.ueSelectionne);
 
-        System.out.println("Nombre d'étudiants trouvés : " + etudiants.size());
-
         listeEtudiants.setAll(etudiants);
     }
 

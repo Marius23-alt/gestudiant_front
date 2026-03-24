@@ -2,9 +2,15 @@ package fr.miage.toulouse.front.controller;
 
 import fr.miage.toulouse.cours.Etudiant;
 import fr.miage.toulouse.cours.Ue;
+import fr.miage.toulouse.front.DataManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+
+import java.util.List;
 
 public class SaisieMasseInscriptionController {
 
@@ -26,6 +32,21 @@ public class SaisieMasseInscriptionController {
 
     private Ue ueSelectionne;
 
+    private ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList();
+
+
+
+
+    @FXML
+    public void initialize() {
+        lblContexte.setText("Chargement...");
+
+        colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        colPrenom.setCellValueFactory(new  PropertyValueFactory<>("prenom"));
+
+        this.tableEtudiants.setItems(listeEtudiants);
+    }
+
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
@@ -36,11 +57,10 @@ public class SaisieMasseInscriptionController {
             lblContexte.setText("Mode Saisie de masse pour l'UE " + this.ueSelectionne.getNom());
             btnValiderMasse.setText("Inscrire à " + this.ueSelectionne.getNom());
         }
-    }
 
-    @FXML
-    public void initialize() {
-        lblContexte.setText("Chargement...");
+        List<Etudiant> etudiants = DataManager.getInstance().getEudiantsAutoriséA(this.ueSelectionne);
+
+        listeEtudiants.setAll(etudiants);
     }
 
     // --- ACTIONS DES BOUTONS ---
