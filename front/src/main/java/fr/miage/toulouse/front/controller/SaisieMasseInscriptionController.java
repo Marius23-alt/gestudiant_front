@@ -1,6 +1,7 @@
 package fr.miage.toulouse.front.controller;
 
 import fr.miage.toulouse.cours.Etudiant;
+import fr.miage.toulouse.cours.Ue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -23,14 +24,23 @@ public class SaisieMasseInscriptionController {
 
     private MainController mainController;
 
+    private Ue ueSelectionne;
+
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
+    public void setUeSelectionne(Ue ue){
+        this.ueSelectionne = ue;
+        if (this.ueSelectionne != null){
+            lblContexte.setText("Mode Saisie de masse pour l'UE " + this.ueSelectionne.getNom());
+            btnValiderMasse.setText("Inscrire à " + this.ueSelectionne.getNom());
+        }
+    }
+
     @FXML
     public void initialize() {
-        lblContexte.setText("Mode Saisie de masse (En travaux 🚧)");
-        btnValiderMasse.setText("Action (En attente)");
+        lblContexte.setText("Chargement...");
     }
 
     // --- ACTIONS DES BOUTONS ---

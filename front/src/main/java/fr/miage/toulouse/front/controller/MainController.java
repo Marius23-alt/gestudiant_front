@@ -171,6 +171,8 @@ public class MainController {
             SaisieMasseInscriptionController saisieCtrl = loader.getController();
             saisieCtrl.setMainController(this);
 
+            saisieCtrl.setUeSelectionne(ue);
+
             contentArea.getChildren().setAll(view);
             titleText.setText("Inscription en masse");
 
@@ -187,6 +189,9 @@ public class MainController {
 
             SaisieMasseValideController saisieCtrl = loader.getController();
             saisieCtrl.setMainController(this);
+
+            saisieCtrl.setUeSelectionne(ue);
+
 
             contentArea.getChildren().setAll(view);
             titleText.setText("Validation en masse");
