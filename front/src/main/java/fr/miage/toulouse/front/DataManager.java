@@ -244,7 +244,8 @@ public class DataManager {
 
 
         for (Etudiant e : this.listeEtudiants){
-            //ajouter tous les étudiants autorisé à faire ueSelectionne à resultat. S'inspirer méthode avant
+            //ajouter tous les étudiants autorisé à faire ueSelectionne à resultat
+            // S'inspirer méthode avant
 
         }
         return resultat;
