@@ -223,6 +223,9 @@ public class DataManager {
         return etuEnCours;
     }
 
+    // ------- METHODE POUR RECUP LES ÉTUDIANTS DANS SAISIE DE MASSE ----------
+
+
     public List<Etudiant> getEtudiantsInscritsA(Ue ueSelectionne) {
         List<Etudiant> resultat = new ArrayList<>();
 
@@ -251,7 +254,7 @@ public class DataManager {
         return resultat;
     }
 
-    //SETTER
+    //      -----SETTER--------
 
     public void setAnneeUniversitaireCourante(String anneeUniversitaireCourante){
         this.anneeUniversitaireCourante = anneeUniversitaireCourante;
