@@ -5,8 +5,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-public class SaisieMasseController {
-    @FXML private Button btnRetour;
+public class SaisieMasseInscriptionController {
+
+    @FXML
+    private Button btnRetour;
     @FXML private Label lblContexte;
     @FXML private CheckBox checkAll;
 

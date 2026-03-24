@@ -106,9 +106,13 @@ public class UeController {
                         btn.setMaxWidth(Double.MAX_VALUE);
 
                         btn.setOnAction(event -> {
+                            Ue ue = getTableView().getItems().get(getIndex());
                             if (mainController != null) {
-                                System.out.println("Ouverture de la Saisie de Masse !");
-                                mainController.handleSaisieMasse();
+                                if (texteBouton.equals("Inscription")) {
+                                    mainController.handleSaisieMasseInscription(ue);
+                                } else if (texteBouton.equals("Validé UE")) {
+                                    mainController.handleSaisieMasseValide(ue);
+                                }
                             } else {
                                 System.out.println("Erreur : Le MainController n'a pas été injecté !");
                             }
