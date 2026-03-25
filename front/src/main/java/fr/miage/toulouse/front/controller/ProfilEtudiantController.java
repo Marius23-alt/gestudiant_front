@@ -119,7 +119,7 @@ public class ProfilEtudiantController {
         //on vide les données écrites en dur dans le fichier FXML
         viderConteneurs();
 
-        // 2. On met à jour les informations globales (ECTS et Semestre)
+        // On met à jour les informations globales (ECTS et Semestre)
         if (textEcts != null) textEcts.setText("ECTS : " + etudiant.getNbEcts() + "/180");
         if (textAnneeSemestre != null) textAnneeSemestre.setText("Semestre Actuel : S" + etudiant.getSemestreActuel());
 
@@ -226,7 +226,7 @@ public class ProfilEtudiantController {
             }
         }
 
-        // 2. On isole les UEs EN COURS (Pour ne pas les proposer à nouveau)
+        // On isole les UEs EN COURS (Pour ne pas les proposer à nouveau)
         List<String> codesEnCours = etudiant.getInscription().stream()
                 .filter(inscr -> inscr.getStatut().equals("en_cours"))
                 .map(inscr -> inscr.getUe().getCode())
@@ -237,7 +237,6 @@ public class ProfilEtudiantController {
                 .map(inscr -> inscr.getUe().getCode())
                 .toList();
 
-        // 3. LE GRAND FILTRE
         List<Ue> uesAutorisees = toutesLesUes.stream()
                 // A. L'UE doit faire partie de son parcours
                 .filter(ue -> ue.getParcour().getNom().equals(etudiant.getParcour().getNom()))
@@ -446,7 +445,7 @@ public class ProfilEtudiantController {
             derniereAction.setStatut("en_cours");
             changementsStatutEnAttente.remove(index);
 
-            System.out.println("↩️ Dernier changement de statut annulé.");
+            System.out.println("Dernier changement de statut annulé.");
         }
 
         // On rafraîchit l'écran
@@ -570,5 +569,5 @@ public class ProfilEtudiantController {
 
 public void setMainController(MainController mainController) {
     this.mainController = mainController;
-}
+    }
 }

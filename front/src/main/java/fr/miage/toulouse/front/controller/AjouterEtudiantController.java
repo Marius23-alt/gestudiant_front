@@ -101,7 +101,7 @@ public class AjouterEtudiantController {
 
             // Création de l'étudiant
             // par défault 0 ects
-            Etudiant nouvelEtudiant = new Etudiant(numEtu, nom, prenom, dateNaiss,null, semestreChoisiInt, 0);
+            Etudiant nouvelEtudiant = new Etudiant(numEtu, nom, prenom, dateNaiss,parcoursChoisi, semestreChoisiInt, 0);
 
             // Sauvegarde dans BDD
             Request req = new Request();
