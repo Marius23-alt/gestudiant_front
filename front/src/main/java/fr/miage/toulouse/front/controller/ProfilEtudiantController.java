@@ -182,17 +182,34 @@ public class ProfilEtudiantController {
      */
     private void calculerUesAutorisees(Etudiant etudiant) {
         containerUeAutorises.getChildren().clear();
+        for (Inscription i : etudiant.getInscription()) {
+            System.out.println("  -> " + i.getUe().getCode() + " | " + i.getUe().getNom() + " | statut: " + i.getStatut());
+        }
+        System.out.println("---");
 
         boolean isSemestreGlobalImpair = DataManager.getInstance().isSemestreImpair();
         String anneeCourante = DataManager.getInstance().getAnneeUniversitaireCourante();
 
+        System.out.println("isSemestreGlobalImpair = " + isSemestreGlobalImpair);
+        System.out.println("anneeCourante = " + anneeCourante);
+
         List<Ue> toutesLesUes = DataManager.getInstance().getListeUes();
 
         // 1. On isole précisément les codes des UEs VALIDÉES (Pour vérifier qu'il a bien le niveau précédent)
+        List<String> codesEnAttente = changementsStatutEnAttente.stream()
+                .map(i -> i.getUe().getCode())
+                .toList();
+
         List<String> codesValides = etudiant.getInscription().stream()
                 .filter(inscr -> inscr.getStatut().equals("valide"))
                 .map(inscr -> inscr.getUe().getCode())
-                .toList();
+                .collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
+
+        for (Inscription inscr : changementsStatutEnAttente) {
+            if (inscr.getStatut().equals("valide") && !codesValides.contains(inscr.getUe().getCode())) {
+                codesValides.add(inscr.getUe().getCode());
+            }
+        }
 
         // 2. On isole les UEs EN COURS (Pour ne pas les proposer à nouveau)
         List<String> codesEnCours = etudiant.getInscription().stream()
@@ -261,19 +278,51 @@ public class ProfilEtudiantController {
         btnInscrire.setStyle("-fx-background-color: #ffc107; -fx-background-radius: 8; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
 
         btnInscrire.setOnAction(event -> {
+
+            String anneeCourante = DataManager.getInstance().getAnneeUniversitaireCourante();
+            boolean isSaisonImpaire = DataManager.getInstance().isSemestreImpair();
+
+            int ectsActuels = etudiantCourant.getInscription().stream()
+                    .filter(i -> i.getAnnee().equals(anneeCourante))
+                    .filter(i -> i.getStatut().equals("en_cours"))
+                    .filter(i -> (i.getUe().getSemestre() % 2 != 0) == isSaisonImpaire)
+                    .mapToInt(i -> i.getUe().getNbCredit())
+                    .sum();
+
+            int ectsFuturs = ectsActuels + ue.getNbCredit();
+
+            System.out.println("TEST ECTS -> Actuels : " + ectsActuels + " | Ajout : " + ue.getNbCredit() + " | Total Futur : " + ectsFuturs);
+
+            if (ectsFuturs > 39) {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                alert.setTitle("Limite absolue atteinte");
+                alert.setHeaderText("Inscription bloquée !");
+                alert.setContentText("L'étudiant ne peut pas dépasser 39 ECTS par semestre.\nDérogation maximale atteinte.");
+                alert.showAndWait();
+                return;
+            }
+
+            if (ectsFuturs > 30) {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Dérogation requise");
+                alert.setHeaderText("Dépassement de la limite standard (30 ECTS)");
+                alert.setContentText("L'ajout de cette matière portera le total à " + ectsFuturs + " ECTS pour ce semestre.\nUne dérogation signée est nécessaire. Voulez-vous continuer l'inscription ?");
+
+                java.util.Optional<javafx.scene.control.ButtonType> result = alert.showAndWait();
+                if (result.isEmpty() || result.get() != javafx.scene.control.ButtonType.OK) {
+                    return;
+                }
+            }
+
             System.out.println("Ajout au brouillon pour : " + ue.getNom());
 
-            // 1. On crée le ticket d'inscription (sans toucher à la BDD !)
-            Inscription nouvelleInscription = new Inscription(etudiantCourant, ue, annee, "en_cours");
+            Inscription nouvelleInscription = new Inscription(etudiantCourant, ue, anneeCourante, "en_cours");
 
-            // 2. On met à jour la mémoire Java
             etudiantCourant.ajouterInscription(nouvelleInscription);
             ue.ajouterInscription(nouvelleInscription);
 
-            // 3. 🌟 On ajoute au "Panier" pour plus tard !
             inscriptionsEnAttente.add(nouvelleInscription);
 
-            // 4. On rafraîchit l'écran (la matière va glisser dans la boîte bleue)
             setEtudiant(etudiantCourant);
         });
 
