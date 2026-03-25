@@ -6,7 +6,9 @@ import fr.miage.toulouse.cours.Ue;
 import fr.miage.toulouse.front.DataManager;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -19,31 +21,39 @@ import fr.miage.toulouse.database.Request;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ProfilEtudiantController {
 
-    @FXML private Text textEcts;
-    @FXML private Text textAnneeSemestre;
-    @FXML private Arc ectsArc;
+    @FXML
+    private Text textEcts;
+    @FXML
+    private Text textAnneeSemestre;
+    @FXML
+    private Arc ectsArc;
 
-    @FXML private VBox containerUeEnCours;
-    @FXML private VBox containerUeEchouees;
-    @FXML private VBox containerUeAutorises;
-    @FXML private VBox containerUeValidees;
+    @FXML
+    private VBox containerUeEnCours;
+    @FXML
+    private VBox containerUeEchouees;
+    @FXML
+    private VBox containerUeAutorises;
+    @FXML
+    private VBox containerUeValidees;
 
     private Etudiant etudiantCourant;
     private MainController mainController;
     private List<Inscription> inscriptionsEnAttente = new ArrayList<>();
     private List<Inscription> changementsStatutEnAttente = new ArrayList<>();
 
+    private Button boutonRetour;
+
     @FXML
     public void initialize() {
         System.out.println("Vue Profil chargée !");
     }
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
-    }
+
 
     /**
      * Nettoie les données "en dur" du FXML pour avoir des boîtes vides avant de les remplir dynamiquement.
@@ -86,8 +96,7 @@ public class ProfilEtudiantController {
         containerUeEchouees.getChildren().add(new Label("Aucun échec."));
         containerUeValidees.getChildren().add(new Label("Aucune UE validée."));
 
-        HBox fausseLigne = creerLigneUe("UE Test (Générée en Java)", "2024", "S" + semestreChoisi, "Inscrire", "#ffc107");
-        containerUeAutorises.getChildren().add(fausseLigne);
+        calculerUesAutorisees(etudiant);
     }
 
     /**
@@ -106,24 +115,27 @@ public class ProfilEtudiantController {
 
         System.out.println("Profil chargé pour : " + etudiant.getNom() + " " + etudiant.getPrenom());
 
-        // 1. On vide les fausses données écrites en dur dans le fichier FXML
         viderConteneurs();
 
-        // 2. On met à jour les informations globales (ECTS et Semestre)
-        if (textEcts != null) textEcts.setText("ECTS : " + etudiant.getNbEcts() + "/180");
+        int totalEctsEnDirect = 0;
+        if (etudiant.getInscription() != null) {
+            for (Inscription i : etudiant.getInscription()) {
+                if ("valide".equalsIgnoreCase(i.getStatut())) {
+                    totalEctsEnDirect += i.getUe().getNbCredit();
+                }
+            }
+        }
+
+        if (textEcts != null) textEcts.setText("ECTS : " + totalEctsEnDirect + "/180");
         if (textAnneeSemestre != null) textAnneeSemestre.setText("Semestre Actuel : S" + etudiant.getSemestreActuel());
+        if (ectsArc != null) ectsArc.setLength((double) totalEctsEnDirect * 2);
 
-        if (ectsArc != null) ectsArc.setLength((double) etudiant.getNbEcts() * 2);
-
-        // 3. On parcourt les vraies inscriptions de l'étudiant pour les classer
         if (etudiant.getInscription() != null) {
             for (Inscription inscr : etudiant.getInscription()) {
-
                 String nomUe = inscr.getUe().getNom();
                 String annee = inscr.getAnnee();
                 String semestre = "S" + inscr.getUe().getSemestre();
 
-                // On dispatche l'affichage dans la bonne VBox selon le statut de l'inscription
                 switch (inscr.getStatut().toLowerCase()) {
                     case "valide":
                         containerUeValidees.getChildren().add(creerLigneUe(nomUe, annee, semestre, "Validée", "#28a745"));
@@ -138,19 +150,35 @@ public class ProfilEtudiantController {
             }
         }
 
-        // 4. Si une boîte est vide après le tri, on ajoute un petit message indicatif
-        if (containerUeEnCours.getChildren().isEmpty()) {
-            containerUeEnCours.getChildren().add(new Label("Aucune UE en cours."));
-        }
-        if (containerUeValidees.getChildren().isEmpty()) {
-            containerUeValidees.getChildren().add(new Label("Aucune UE validée."));
-        }
-        if (containerUeEchouees.getChildren().isEmpty()) {
-            containerUeEchouees.getChildren().add(new Label("Aucun échec."));
+        if (containerUeEnCours.getChildren().isEmpty()) containerUeEnCours.getChildren().add(new Label("Aucune UE en cours."));
+        if (containerUeValidees.getChildren().isEmpty()) containerUeValidees.getChildren().add(new Label("Aucune UE validée."));
+        if (containerUeEchouees.getChildren().isEmpty()) containerUeEchouees.getChildren().add(new Label("Aucun échec."));
+
+        calculerUesAutorisees(etudiant);
+    }
+
+    /**
+     * Calcule en temps réel le total des ECTS validés (y compris les modifs non enregistrées)
+     * et met à jour le cercle (Arc) et le texte à l'écran.
+     */
+    private void mettreAJourAffichageEcts() {
+        if (etudiantCourant == null) return;
+
+        int totalEctsLive = 0;
+        for (Inscription inscr : etudiantCourant.getInscription()) {
+            if ("valide".equalsIgnoreCase(inscr.getStatut())) {
+                totalEctsLive += inscr.getUe().getNbCredit();
+            }
         }
 
-        // 5. On calcule et on affiche les UEs autorisées pour le semestre courant !
-        calculerUesAutorisees(etudiant);
+        if (textEcts != null) {
+            textEcts.setText("ECTS : " + totalEctsLive + "/180");
+        }
+
+        if (ectsArc != null) {
+            double angle = (double) totalEctsLive * 2;
+            ectsArc.setLength(angle);
+        }
     }
 
     /**
@@ -177,24 +205,45 @@ public class ProfilEtudiantController {
     }
 
     /**
-     * Calcule et affiche les UEs auxquelles l'étudiant a le droit de s'inscrire,
-     * en respectant la saison (Pair/Impair) ET la chaîne de l'UE précédente.
+     * Détermine et affiche la liste des Unités d'Enseignement (UE) auxquelles
+     * l'étudiant peut s'inscrire pour le semestre courant.
+     * La méthode filtre les UE selon plusieurs critères métiers :
+     * - Appartenance au parcours de l'étudiant
+     * - Cohérence avec la parité du semestre global (pair/impair)
+     * - Exclusion des UE déjà validées, en cours ou échouées durant l'année
+     * - Vérification du respect des prérequis académiques.
+     *
+     *
+     * @param etudiant L'étudiant pour lequel calculer les droits d'inscription.
      */
     private void calculerUesAutorisees(Etudiant etudiant) {
         containerUeAutorises.getChildren().clear();
+        for (Inscription i : etudiant.getInscription()) {
+            System.out.println("  -> " + i.getUe().getCode() + " | " + i.getUe().getNom() + " | statut: " + i.getStatut());
+        }
+        System.out.println("---");
 
         boolean isSemestreGlobalImpair = DataManager.getInstance().isSemestreImpair();
         String anneeCourante = DataManager.getInstance().getAnneeUniversitaireCourante();
 
+        System.out.println("isSemestreGlobalImpair = " + isSemestreGlobalImpair);
+        System.out.println("anneeCourante = " + anneeCourante);
+
         List<Ue> toutesLesUes = DataManager.getInstance().getListeUes();
 
-        // 1. On isole précisément les codes des UEs VALIDÉES (Pour vérifier qu'il a bien le niveau précédent)
+
+
         List<String> codesValides = etudiant.getInscription().stream()
                 .filter(inscr -> inscr.getStatut().equals("valide"))
                 .map(inscr -> inscr.getUe().getCode())
-                .toList();
+                .collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
 
-        // 2. On isole les UEs EN COURS (Pour ne pas les proposer à nouveau)
+        for (Inscription inscr : changementsStatutEnAttente) {
+            if (inscr.getStatut().equals("valide") && !codesValides.contains(inscr.getUe().getCode())) {
+                codesValides.add(inscr.getUe().getCode());
+            }
+        }
+
         List<String> codesEnCours = etudiant.getInscription().stream()
                 .filter(inscr -> inscr.getStatut().equals("en_cours"))
                 .map(inscr -> inscr.getUe().getCode())
@@ -205,34 +254,26 @@ public class ProfilEtudiantController {
                 .map(inscr -> inscr.getUe().getCode())
                 .toList();
 
-        // 3. LE GRAND FILTRE
         List<Ue> uesAutorisees = toutesLesUes.stream()
-                // A. L'UE doit faire partie de son parcours
                 .filter(ue -> ue.getParcour().getNom().equals(etudiant.getParcour().getNom()))
 
-                // B. L'UE doit correspondre à la saison actuelle (Automne=Impair, Printemps=Pair)
                 .filter(ue -> (ue.getSemestre() % 2 != 0) == isSemestreGlobalImpair)
 
-                // C. L'étudiant ne doit pas l'avoir déjà validée, ni l'avoir en cours, NI l'avoir échouée cette année !
                 .filter(ue -> !codesValides.contains(ue.getCode())
                         && !codesEnCours.contains(ue.getCode())
                         && !codesEchouesCetteAnnee.contains(ue.getCode()))
 
-                // D. LA RÈGLE DE L'UE PRÉCÉDENTE
                 .filter(ue -> {
                     String prerequis = ue.getCodeUePrecedente();
 
-                    // Si prerequis est null (ou vide), c'est une matière de S1, elle est ouverte par défaut !
                     if (prerequis == null || prerequis.trim().isEmpty()) {
                         return true;
                     }
 
-                    // Sinon, on vérifie que l'étudiant a bien ce code précédent dans ses matières validées
                     return codesValides.contains(prerequis);
                 })
                 .toList();
 
-        // 4. Affichage Visuel
         if (uesAutorisees.isEmpty()) {
             Label lblVide = new Label("Aucune UE disponible à l'inscription pour ce semestre (Prérequis manquants ou parcours terminé).");
             lblVide.setTextFill(javafx.scene.paint.Color.web("#757575"));
@@ -261,19 +302,51 @@ public class ProfilEtudiantController {
         btnInscrire.setStyle("-fx-background-color: #ffc107; -fx-background-radius: 8; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
 
         btnInscrire.setOnAction(event -> {
+
+            String anneeCourante = DataManager.getInstance().getAnneeUniversitaireCourante();
+            boolean isSaisonImpaire = DataManager.getInstance().isSemestreImpair();
+
+            int ectsActuels = etudiantCourant.getInscription().stream()
+                    .filter(i -> i.getAnnee().equals(anneeCourante))
+                    .filter(i -> i.getStatut().equals("en_cours"))
+                    .filter(i -> (i.getUe().getSemestre() % 2 != 0) == isSaisonImpaire)
+                    .mapToInt(i -> i.getUe().getNbCredit())
+                    .sum();
+
+            int ectsFuturs = ectsActuels + ue.getNbCredit();
+
+            System.out.println("TEST ECTS -> Actuels : " + ectsActuels + " | Ajout : " + ue.getNbCredit() + " | Total Futur : " + ectsFuturs);
+
+            if (ectsFuturs > 39) {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                alert.setTitle("Limite absolue atteinte");
+                alert.setHeaderText("Inscription bloquée !");
+                alert.setContentText("L'étudiant ne peut pas dépasser 39 ECTS par semestre.\nDérogation maximale atteinte.");
+                alert.showAndWait();
+                return;
+            }
+
+            if (ectsFuturs > 30) {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Dérogation requise");
+                alert.setHeaderText("Dépassement de la limite standard (30 ECTS)");
+                alert.setContentText("L'ajout de cette matière portera le total à " + ectsFuturs + " ECTS pour ce semestre.\nUne dérogation signée est nécessaire. Voulez-vous continuer l'inscription ?");
+
+                java.util.Optional<javafx.scene.control.ButtonType> result = alert.showAndWait();
+                if (result.isEmpty() || result.get() != javafx.scene.control.ButtonType.OK) {
+                    return;
+                }
+            }
+
             System.out.println("Ajout au brouillon pour : " + ue.getNom());
 
-            // 1. On crée le ticket d'inscription (sans toucher à la BDD !)
-            Inscription nouvelleInscription = new Inscription(etudiantCourant, ue, annee, "en_cours");
+            Inscription nouvelleInscription = new Inscription(etudiantCourant, ue, anneeCourante, "en_cours");
 
-            // 2. On met à jour la mémoire Java
             etudiantCourant.ajouterInscription(nouvelleInscription);
             ue.ajouterInscription(nouvelleInscription);
 
-            // 3. 🌟 On ajoute au "Panier" pour plus tard !
             inscriptionsEnAttente.add(nouvelleInscription);
 
-            // 4. On rafraîchit l'écran (la matière va glisser dans la boîte bleue)
             setEtudiant(etudiantCourant);
         });
 
@@ -321,9 +394,7 @@ public class ProfilEtudiantController {
         return hbox;
     }
 
-    /**
-     * Valide le brouillon et envoie tout à la base de données.
-     */
+
     /**
      * Valide le brouillon (Nouvelles inscriptions + Changements de notes) et envoie tout à la BDD.
      */
@@ -337,13 +408,11 @@ public class ProfilEtudiantController {
         fr.miage.toulouse.database.Request req = new fr.miage.toulouse.database.Request();
         int compteur = 0;
 
-        // 1. Sauvegarde des nouvelles inscriptions
         for (Inscription inscr : inscriptionsEnAttente) {
             boolean succes = req.ajouterInscitption(inscr.getEtudiant().getNumEtu(), inscr.getUe().getCode(), inscr.getAnnee());
             if (succes) compteur++;
         }
 
-        // 2. Sauvegarde des changements de statuts (Valider / Echouer)
         for (Inscription inscrModifiee : changementsStatutEnAttente) {
             boolean succes = req.modifierStatutInscription(
                     inscrModifiee.getEtudiant().getNumEtu(),
@@ -354,21 +423,20 @@ public class ProfilEtudiantController {
             if (succes) compteur++;
         }
 
-        System.out.println("💾 Succès : " + compteur + " modifications sauvegardées en BDD !");
+        System.out.println("Succès : " + compteur + " modifications sauvegardées dans la BDD !");
 
-        // On vide les deux paniers
         inscriptionsEnAttente.clear();
         changementsStatutEnAttente.clear();
     }
 
     /**
-     * "Ctrl+Z" : Annule la dernière action effectuée.
+     * Annule la dernière action effectuée.
      */
     @FXML
     public void handleAnnulerDernier() {
         if (inscriptionsEnAttente.isEmpty() && changementsStatutEnAttente.isEmpty()) return;
 
-        // S'il y a des nouvelles inscriptions dans le panier, on annule la dernière
+        // Si nouvelles inscriptions dans le panier, on annule la dernière
         if (!inscriptionsEnAttente.isEmpty()) {
             int index = inscriptionsEnAttente.size() - 1;
             Inscription derniereAction = inscriptionsEnAttente.get(index);
@@ -377,9 +445,8 @@ public class ProfilEtudiantController {
             derniereAction.getUe().getInscription().remove(derniereAction);
             inscriptionsEnAttente.remove(index);
 
-            System.out.println("↩️ Dernière inscription annulée.");
+            System.out.println("Dernière inscription annulée.");
         }
-        // Sinon, s'il y a des changements de statut, on annule le dernier changement
         else if (!changementsStatutEnAttente.isEmpty()) {
             int index = changementsStatutEnAttente.size() - 1;
             Inscription derniereAction = changementsStatutEnAttente.get(index);
@@ -387,37 +454,32 @@ public class ProfilEtudiantController {
             derniereAction.setStatut("en_cours");
             changementsStatutEnAttente.remove(index);
 
-            System.out.println("↩️ Dernier changement de statut annulé.");
+            System.out.println("Dernier changement de statut annulé.");
         }
 
-        // On rafraîchit l'écran
         setEtudiant(etudiantCourant);
     }
 
     /**
-     * "Reset" : Annule TOUTES les modifications en attente (Inscriptions ET Statuts).
+     * Annule TOUTES les modifications en attente (Inscriptions ET Statuts).
      */
     @FXML
     public void handleAnnulerTout() {
-        // 🌟 CORRECTION : On vérifie les deux paniers
         if (inscriptionsEnAttente.isEmpty() && changementsStatutEnAttente.isEmpty()) return;
 
-        // 1. Annuler les nouvelles inscriptions
         for (Inscription inscr : inscriptionsEnAttente) {
             etudiantCourant.getInscription().remove(inscr);
             inscr.getUe().getInscription().remove(inscr);
         }
         inscriptionsEnAttente.clear();
 
-        // 2. Annuler les modifications de statut
         for (Inscription inscrModifiee : changementsStatutEnAttente) {
             inscrModifiee.setStatut("en_cours"); // On remet l'état de départ
         }
         changementsStatutEnAttente.clear();
 
-        // On rafraîchit l'écran
         setEtudiant(etudiantCourant);
-        System.out.println("🗑️ Toutes les modifications ont été annulées.");
+        System.out.println("Toutes les modifications ont été annulées.");
     }
 
     /**
@@ -426,15 +488,12 @@ public class ProfilEtudiantController {
     @FXML
     public void handleModifierProfil() {
         try {
-            // On charge le fichier visuel de la pop-up
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/fxml/modifierProfil.fxml"));
             javafx.scene.Parent root = loader.load();
 
-            // On envoie l'étudiant actuel au contrôleur de la pop-up
             fr.miage.toulouse.front.controller.ModifierProfilController controller = loader.getController();
             controller.initData(etudiantCourant, this);
 
-            // On crée la fenêtre et on l'affiche
             javafx.stage.Stage stage = new javafx.stage.Stage();
             stage.setTitle("Modifier Profil");
             stage.setScene(new javafx.scene.Scene(root));
@@ -442,10 +501,77 @@ public class ProfilEtudiantController {
             stage.showAndWait();
 
         } catch (java.io.IOException e) {
-            System.err.println("❌ Erreur lors de l'ouverture de la fenêtre : " + e.getMessage());
+            System.err.println("Erreur lors de l'ouverture de la fenêtre : " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    @FXML
+    public void handleSupprimerEtudiant() {
 
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation de suppression");
+        alert.setHeaderText("Supprimer l'étudiant ?");
+        alert.setContentText("Cette action est définitive. Voulez-vous continuer ?");
+        Optional<ButtonType> result = alert.showAndWait();
+
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+
+
+            boolean reussi = DataManager.getInstance().supprimerEtudiant(etudiantCourant);
+
+            if (reussi) {
+
+                fr.miage.toulouse.database.Request rq = new Request();
+
+                reussi = rq.supprimerEtudiant(this.etudiantCourant);
+
+                if (reussi) {
+                    Alert success = new Alert(Alert.AlertType.INFORMATION);
+                    success.setTitle("Suppression réussie");
+                    success.setHeaderText(null);
+                    success.setContentText("L'étudiant a été supprimé.");
+                    success.showAndWait();
+                    this.mainController.retourDashBord();
+
+                } else {
+                    Alert errorData = new Alert(Alert.AlertType.ERROR);
+                    errorData.setTitle("Erreur");
+                    errorData.setHeaderText("Échec de la suppression");
+                    errorData.setContentText("Impossible de supprimer l'étudiant.");
+                    errorData.showAndWait();
+                }
+            } else {
+                Alert error = new Alert(Alert.AlertType.ERROR);
+                error.setTitle("Erreur");
+                error.setHeaderText("Échec de la suppression");
+                error.setContentText("Impossible de supprimer l'étudiant.");
+                error.showAndWait();
+            }
+
+        } else {
+            System.out.println("Suppression annulée par l'utilisateur.");
+        }
+    }
+
+    /**
+     * Gère le retour à l'écran précédent (Dashboard).
+     * Utilise le contrôleur principal pour réafficher la vue globale
+     * tout en conservant l'état des filtres en mémoire.
+     */
+    @FXML
+    private void handleRetour() {
+        if (mainController != null) {
+            mainController.retourDashBord();
+        } else {
+            System.err.println("Erreur : MainController non injecté dans ProfilEtudiantController.");
+        }
+    }
+
+// --- Setters ----
+
+public void setMainController(MainController mainController) {
+    this.mainController = mainController;
+    }
 }

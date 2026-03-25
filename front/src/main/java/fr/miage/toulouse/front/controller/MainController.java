@@ -2,6 +2,7 @@ package fr.miage.toulouse.front.controller;
 
 
 import fr.miage.toulouse.cours.Etudiant;
+import fr.miage.toulouse.cours.Ue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -95,10 +96,6 @@ public class MainController {
      */
     @FXML
     private void handleDashboard() {
-        if (activeButton == btnStat && !contentArea.getChildren().isEmpty()) {
-            return;
-        }
-
         setActiveButton(btnStat);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dashboard.fxml"));
@@ -157,26 +154,46 @@ public class MainController {
      * <p>
      * Cette méthode est généralement appelée par un contrôleur enfant (comme {@link UeController}).
      * Elle charge la vue générique {@code saisieMasse.fxml} et établit la liaison bidirectionnelle
-     * en injectant le {@code MainController} dans le {@link SaisieMasseController}.
+     * en injectant le {@code MainController} dans le {@link SaisieMasseValideController}.
      * Cela permet notamment au bouton "Retour" de la nouvelle vue de fonctionner correctement.
      * </p>
      */
     @FXML
-    public void handleSaisieMasse() {
+    public void handleSaisieMasseInscription(Ue ue) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/saisieMasse.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SaisieMasseInscription.fxml"));
             Parent view = loader.load();
 
-            // On passe le MainController à la page de Saisie pour que le bouton Retour fonctionne !
-            SaisieMasseController saisieCtrl = loader.getController();
+            SaisieMasseInscriptionController saisieCtrl = loader.getController();
             saisieCtrl.setMainController(this);
 
+            saisieCtrl.setUeSelectionne(ue);
+
             contentArea.getChildren().setAll(view);
-            // Le titre sera modifié dynamiquement plus tard
-            titleText.setText("Saisie de Masse");
+            titleText.setText("Inscription en masse");
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Erreur chargement Saisie Masse : {}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Erreur chargement Saisie Masse Inscription : {}", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void handleSaisieMasseValide(Ue ue) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SaisieMasseValide.fxml"));
+            Parent view = loader.load();
+
+            SaisieMasseValideController saisieCtrl = loader.getController();
+            saisieCtrl.setMainController(this);
+
+            saisieCtrl.setUeSelectionne(ue);
+
+
+            contentArea.getChildren().setAll(view);
+            titleText.setText("Validation en masse");
+
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Erreur chargement Saisie Masse Valide ", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -241,7 +258,7 @@ public class MainController {
             titleText.setText("Contrat Pédagogique - " + etudiant.getPrenom() + " " + etudiant.getNom());
 
         } catch (Exception e) {
-            System.err.println("❌ Erreur lors du chargement du profil étudiant : " + e.getMessage());
+            System.err.println("Erreur lors du chargement du profil étudiant : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -258,7 +275,18 @@ public class MainController {
     @FXML
     private void handleAdminSemestre() {
         setActiveButton(btnAdmin);
-        loadView("adminSemestre.fxml", "Administration du Semestre");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/adminSemestre.fxml"));
+            Parent view = loader.load();
+
+            AdminSemestreController adminCtrl = loader.getController();
+            adminCtrl.setMainController(this);
+
+            contentArea.getChildren().setAll(view);
+            titleText.setText("Administration du Semestre");
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -292,7 +320,7 @@ public class MainController {
             titleText.setText(titre);
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Erreur chargement profil : {}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Erreur chargement profil", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -384,6 +412,9 @@ public class MainController {
         }
     }
 
+    // --- Setters ---
+
+
     /**
      * Gère l'apparence visuelle de la navigation et indique sur quelle on est
      * @param clickedButton Le bouton cliqué par l'utilisateur
@@ -406,6 +437,13 @@ public class MainController {
         if (titleText != null) {
             titleText.setText(titre);
         }
+    }
+
+    /**
+     * Permet de revenir au menuprincipal avec le dashboard
+     */
+    public void retourDashBord(){
+        handleDashboard();
     }
 
 }

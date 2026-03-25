@@ -19,7 +19,7 @@
       <BorderPane style="-fx-background-color: #03224C;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
          <left>
-            <VBox alignment="TOP_CENTER" prefWidth="260.0" spacing="25.0" style="-fx-background-color: #03224C;" BorderPane.alignment="CENTER">
+            <VBox alignment="TOP_CENTER" prefWidth="260.0" spacing="25.0" style="-fx-background-color: #03224C; -fx-background-radius: 0 0 20 0;;" BorderPane.alignment="CENTER">
                <padding>
                   <Insets bottom="20.0" left="20.0" right="20.0" top="30.0" />
                </padding>
@@ -67,7 +67,7 @@
 
                         <Button fx:id="btnUe" alignment="TOP_LEFT" graphicTextGap="15.0" mnemonicParsing="false" onAction="#handleUe" onMouseEntered="#handleMouseIn" onMouseExited="#handleMouseOut" prefHeight="45.0" prefWidth="220.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="UE" textFill="WHITE">
                            <graphic>
-                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../images/UE.png" />
                                  </image>
@@ -125,7 +125,7 @@
                      </children>
                   </HBox>
 
-                  <StackPane fx:id="contentArea" style="-fx-background-color: white; -fx-background-radius: 20 0 0 0;" VBox.vgrow="ALWAYS" />
+                  <StackPane fx:id="contentArea" style="-fx-background-color: white;" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
          </center>
