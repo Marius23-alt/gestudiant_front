@@ -67,7 +67,7 @@
 
         <HBox alignment="CENTER_RIGHT">
             <children>
-                <Button fx:id="btnValiderMasse" mnemonicParsing="false" onAction="#handleValiderMasse" style="-fx-background-color: #FFB300; -fx-background-radius: 15; -fx-cursor: hand;" text="Inscrire les 17 à Anglais">
+                <Button fx:id="btnValiderMasse" mnemonicParsing="false" onAction="#handleValiderMasse" style="-fx-background-color: #007dff; -fx-background-radius: 15; -fx-cursor: hand;" text="Inscrire les 17 à Anglais">
                     <font>
                         <Font name="System Bold" size="16.0" />
                     </font>

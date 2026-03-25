@@ -61,7 +61,7 @@ public class SaisieMasseValideController {
         this.ueSelectionne = ue;
         if (this.ueSelectionne != null){
             lblContexte.setText("Mode Saisie de masse pour l'UE " + this.ueSelectionne.getNom());
-            btnValiderMasse.setText("Inscrire à " + this.ueSelectionne.getNom());
+            btnValiderMasse.setText("Valider à " + this.ueSelectionne.getNom());
         }
 
         List<Etudiant> etudiants = DataManager.getInstance().getEtudiantsInscritsA(this.ueSelectionne);
