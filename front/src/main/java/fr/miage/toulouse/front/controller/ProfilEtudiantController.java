@@ -522,7 +522,7 @@ public class ProfilEtudiantController {
 
                 fr.miage.toulouse.database.Request rq = new Request();
 
-                //reussi = rq.supprimerEtudiant(this.etudiantCourant);
+                reussi = rq.supprimerEtudiant(this.etudiantCourant);
 
                 if (reussi) {
                     Alert success = new Alert(Alert.AlertType.INFORMATION);
