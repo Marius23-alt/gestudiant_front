@@ -102,7 +102,7 @@ public class AjouterEtudiantController {
 
             // 3. Création de l'étudiant avec les 7 paramètres requis par ton constructeur !
             // (Nouveau venu = semestre choisi, et 0 ECTS pour l'instant)
-            Etudiant nouvelEtudiant = new Etudiant(numEtu, nom, prenom, dateNaiss,null, semestreChoisiInt, 0);
+            Etudiant nouvelEtudiant = new Etudiant(numEtu, nom, prenom, dateNaiss,parcoursChoisi, semestreChoisiInt, 0);
 
             // 4. Sauvegarde en BDD
             Request req = new Request();
