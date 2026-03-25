@@ -46,6 +46,8 @@ public class ProfilEtudiantController {
     private List<Inscription> inscriptionsEnAttente = new ArrayList<>();
     private List<Inscription> changementsStatutEnAttente = new ArrayList<>();
 
+    private Button boutonRetour;
+
     @FXML
     public void initialize() {
         System.out.println("Vue Profil chargée !");
@@ -547,6 +549,20 @@ public class ProfilEtudiantController {
         } else {
             // L’utilisateur a cliqué sur Annuler
             System.out.println("Suppression annulée par l'utilisateur.");
+        }
+    }
+
+    /**
+     * Gère le retour à l'écran précédent (Dashboard).
+     * Utilise le contrôleur principal pour réafficher la vue globale
+     * tout en conservant l'état des filtres en mémoire.
+     */
+    @FXML
+    private void handleRetour() {
+        if (mainController != null) {
+            mainController.retourDashBord();
+        } else {
+            System.err.println("Erreur : MainController non injecté dans ProfilEtudiantController.");
         }
     }
 

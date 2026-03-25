@@ -15,7 +15,8 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background: #D3D3D3;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.front.controller.ProfilEtudiantController">    <content>
+<ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background: #D3D3D3;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.front.controller.ProfilEtudiantController">
+    <content>
         <HBox alignment="TOP_CENTER" spacing="30.0" style="-fx-background-color: #D3D3D3;">
             <padding>
                 <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
@@ -27,272 +28,120 @@
 
                         <HBox alignment="CENTER_LEFT" spacing="20.0">
                             <children>
+                                <Button fx:id="btnRetour" mnemonicParsing="false" onAction="#handleRetour" style="-fx-background-color: white; -fx-border-color: black; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;" text="&lt; Retour">
+                                    <font><Font name="System Bold" size="14.0" /></font>
+                                    <padding><Insets bottom="5.0" left="15.0" right="15.0" top="5.0" /></padding>
+                                </Button>
+                                <Text fx:id="textNomProfil" strokeType="OUTSIDE" strokeWidth="0.0" text="Profil de l'étudiant">
+                                    <font><Font name="System Bold" size="28.0" /></font>
+                                </Text>
+                            </children>
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="20.0">
+                            <children>
                                 <StackPane>
                                     <children>
                                         <Group>
                                             <children>
                                                 <Circle fill="WHITE" radius="50.0" stroke="#bfbfbf" strokeType="INSIDE" strokeWidth="2.0"/>
-                                                <Arc fx:id="ectsArc" fill="TRANSPARENT" length="-90.0"
-                                                     radiusX="50.0" radiusY="50.0" startAngle="90.0"
-                                                     stroke="#2da10d" strokeLineCap="BUTT" strokeWidth="5.0" type="OPEN"/>
+                                                <Arc fx:id="ectsArc" fill="TRANSPARENT" length="-90.0" radiusX="50.0" radiusY="50.0" startAngle="90.0" stroke="#2da10d" strokeLineCap="BUTT" strokeWidth="5.0" type="OPEN"/>
                                             </children>
                                         </Group>
-
-                                        <SVGPath content="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                                                 scaleX="3.0" scaleY="3.0"/>
+                                        <SVGPath content="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" scaleX="3.0" scaleY="3.0"/>
                                     </children>
                                 </StackPane>
-
-                                <Text fx:id="textEcts" fill="#2da10d" strokeType="OUTSIDE" strokeWidth="0.0" text="ECTS : 45/180">
-                                    <font>
-                                        <Font name="System Bold" size="16.0"/>
-                                    </font>
+                                <Text fx:id="textEcts" fill="#2da10d" strokeType="OUTSIDE" strokeWidth="0.0" text="ECTS : --/180">
+                                    <font><Font name="System Bold" size="16.0"/></font>
                                 </Text>
-
                                 <Region HBox.hgrow="ALWAYS"/>
-
                                 <VBox spacing="10">
                                     <children>
-
-                                        <Button mnemonicParsing="false" onAction="#handleModifierProfil" style="-fx-background-color: #6c757d; -fx-background-radius: 20; -fx-cursor: hand;" text="Modifier" textFill="WHITE">
-                                            <font>
-                                                <Font name="System Bold" size="12.0"/>
-                                            </font>
-                                            <padding>
-                                                <Insets bottom="8.0" left="20.0" right="20.0" top="8.0"/>
-                                            </padding>
-                                            <graphic>
-                                                <SVGPath content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                                                         fill="WHITE" scaleX="0.8" scaleY="0.8"/>
-                                            </graphic>
+                                        <Button onAction="#handleModifierProfil" style="-fx-background-color: #6c757d; -fx-background-radius: 20; -fx-cursor: hand;" text="Modifier" textFill="WHITE">
+                                            <font><Font name="System Bold" size="12.0"/></font>
+                                            <padding><Insets bottom="8.0" left="20.0" right="20.0" top="8.0"/></padding>
                                         </Button>
-
-                                        <Button mnemonicParsing="false"  onAction="#handleSupprimerEtudiant" style="-fx-background-color: #FF0000; -fx-background-radius: 20; -fx-cursor: hand;" text="Supprimer" textFill="WHITE">
-                                            <font>
-                                                <Font name="System Bold" size="12.0"/>
-                                            </font>
-                                            <padding>
-                                                <Insets bottom="8.0" left="20.0" right="20.0" top="8.0"/>
-                                            </padding>
-                                            <graphic>
-                                                <SVGPath content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                                                         fill="WHITE" scaleX="0.8" scaleY="0.8"/>
-                                            </graphic>
+                                        <Button onAction="#handleSupprimerEtudiant" style="-fx-background-color: #FF0000; -fx-background-radius: 20; -fx-cursor: hand;" text="Supprimer" textFill="WHITE">
+                                            <font><Font name="System Bold" size="12.0"/></font>
+                                            <padding><Insets bottom="8.0" left="20.0" right="20.0" top="8.0"/></padding>
                                         </Button>
-
                                     </children>
                                 </VBox>
-
                             </children>
                         </HBox>
-                        <Text fx:id="textAnneeSemestre" fill="#575757" strokeType="OUTSIDE" strokeWidth="0.0" text="2025-2026 | Semestre Pair">
-                            <font>
-                                <Font name="System Bold" size="20.0" />
-                            </font>
+
+                        <Text fx:id="textAnneeSemestre" fill="#575757" text="Chargement du semestre...">
+                            <font><Font name="System Bold" size="20.0" /></font>
                         </Text>
 
                         <VBox spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);">
-                            <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                            </padding>
+                            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
                             <children>
-                                <Label text="UE En cours" textFill="#007bff">
-                                    <font><Font name="System Bold" size="14.0" /></font>
-                                </Label>
-
-                                <VBox fx:id="containerUeEnCours" spacing="10.0">
-                                    <children>
-                                        <HBox alignment="CENTER_LEFT">
-                                            <children>
-                                                <Label maxWidth="1.7976931348623157E308" text="Analyse de données - 2025 - S1" textFill="#007bff" HBox.hgrow="ALWAYS">
-                                                    <font><Font name="System Bold" size="13.0" /></font>
-                                                </Label>
-                                                <Button mnemonicParsing="false" style="-fx-background-color: #007bff; -fx-background-radius: 8;" text="En cours" textFill="WHITE">
-                                                    <font><Font name="System Bold" size="12.0" /></font>
-                                                </Button>
-                                            </children>
-                                        </HBox>
-                                        <HBox alignment="CENTER_LEFT">
-                                            <children>
-                                                <Label maxWidth="1.7976931348623157E308" text="Programmation Web - 2025 - S1" textFill="#007bff" HBox.hgrow="ALWAYS">
-                                                    <font><Font name="System Bold" size="13.0" /></font>
-                                                </Label>
-                                                <Button mnemonicParsing="false" style="-fx-background-color: #007bff; -fx-background-radius: 8;" text="En cours" textFill="WHITE">
-                                                    <font><Font name="System Bold" size="12.0" /></font>
-                                                </Button>
-                                            </children>
-                                        </HBox>
-                                    </children>
-                                </VBox>
+                                <Label text="UE En cours" textFill="#007bff"><font><Font name="System Bold" size="14.0" /></font></Label>
+                                <VBox fx:id="containerUeEnCours" spacing="10.0" />
                             </children>
                         </VBox>
 
                         <VBox spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);">
-                            <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                            </padding>
+                            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
                             <children>
-                                <Label text="UE Echouées" textFill="#757575">
-                                    <font><Font name="System Bold" size="14.0" /></font>
-                                </Label>
-
-                                <VBox fx:id="containerUeEchouees" spacing="10.0">
-                                    <children>
-                                        <HBox alignment="CENTER_LEFT">
-                                            <children>
-                                                <Label maxWidth="1.7976931348623157E308" text="Mathématiques - 2024 - S2" textFill="#575757" HBox.hgrow="ALWAYS">
-                                                    <font><Font name="System Bold" size="13.0" /></font>
-                                                </Label>
-                                                <Button mnemonicParsing="false" style="-fx-background-color: #dc3545; -fx-background-radius: 8;" text="Echouée" textFill="WHITE">
-                                                    <font><Font name="System Bold" size="12.0" /></font>
-                                                </Button>
-                                            </children>
-                                        </HBox>
-                                    </children>
-                                </VBox>
+                                <Label text="UE Echouées" textFill="#757575"><font><Font name="System Bold" size="14.0" /></font></Label>
+                                <VBox fx:id="containerUeEchouees" spacing="10.0" />
                             </children>
                         </VBox>
-
                     </children>
                 </VBox>
 
-
                 <VBox spacing="20.0" HBox.hgrow="ALWAYS">
                     <children>
-
                         <VBox spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);">
-                            <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                            </padding>
+                            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
                             <children>
                                 <HBox alignment="CENTER_LEFT">
                                     <children>
-                                        <Label text="Documents" textFill="#757575">
-                                            <font><Font name="System Bold" size="16.0" /></font>
-                                        </Label>
-                                        <Region HBox.hgrow="ALWAYS" />
-                                        <Button mnemonicParsing="false" style="-fx-background-color: #cccccc; -fx-background-radius: 8;" text="Déposer fichier" textFill="#464646">
-                                            <font><Font name="System Bold" size="12.0" /></font>
-                                        </Button>
+                                        <Label text="Documents" textFill="#757575"><font><Font name="System Bold" size="16.0" /></font></Label>
+                                        <Region HBox.hgrow="ALWAYS" /><Button text="Déposer fichier" style="-fx-background-color: #cccccc; -fx-background-radius: 8;" />
                                     </children>
                                 </HBox>
-
-                                <VBox fx:id="containerDocuments" spacing="5.0">
-                                    <children>
-                                        <Label text="• Dérogation" textFill="#4a4a4a">
-                                            <font><Font size="14.0" /></font>
-                                        </Label>
-                                        <Label text="• Certificat scolarité" textFill="#4a4a4a">
-                                            <font><Font size="14.0" /></font>
-                                        </Label>
-                                    </children>
-                                    <padding>
-                                        <Insets left="10.0" />
-                                    </padding>
-                                </VBox>
+                                <VBox fx:id="containerDocuments" spacing="5.0" />
                             </children>
                         </VBox>
 
                         <VBox spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);">
-                            <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                            </padding>
+                            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
                             <children>
-                                <Label text="UE Autorisés" textFill="#757575">
-                                    <font><Font name="System Bold" size="14.0" /></font>
-                                </Label>
-
-                                <VBox fx:id="containerUeAutorises" spacing="10.0">
-                                    <children>
-                                        <HBox alignment="CENTER_LEFT">
-                                            <children>
-                                                <Label maxWidth="1.7976931348623157E308" text="Droit du numérique - 2025 - S1" textFill="#575757" HBox.hgrow="ALWAYS">
-                                                    <font><Font name="System Bold" size="13.0" /></font>
-                                                </Label>
-                                                <Button mnemonicParsing="false" style="-fx-background-color: #ffc107; -fx-background-radius: 8;" text="Inscrire" textFill="WHITE">
-                                                    <font><Font name="System Bold" size="12.0" /></font>
-                                                </Button>
-                                            </children>
-                                        </HBox>
-                                    </children>
-                                </VBox>
+                                <Label text="UE Autorisées" textFill="#757575"><font><Font name="System Bold" size="14.0" /></font></Label>
+                                <VBox fx:id="containerUeAutorises" spacing="10.0" />
                             </children>
                         </VBox>
 
                         <VBox spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);">
-                            <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                            </padding>
+                            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
                             <children>
-                                <Label text="UE Validées" textFill="#757575">
-                                    <font><Font name="System Bold" size="14.0" /></font>
-                                </Label>
-
-                                <VBox fx:id="containerUeValidees" spacing="10.0">
-                                    <children>
-                                        <HBox alignment="CENTER_LEFT">
-                                            <children>
-                                                <Label maxWidth="1.7976931348623157E308" text="Introduction Java - 2024 - S1" textFill="#575757" HBox.hgrow="ALWAYS">
-                                                    <font><Font name="System Bold" size="13.0" /></font>
-                                                </Label>
-                                                <Button mnemonicParsing="false" style="-fx-background-color: #28a745; -fx-background-radius: 8;" text="Validée" textFill="WHITE">
-                                                    <font><Font name="System Bold" size="12.0" /></font>
-                                                </Button>
-                                            </children>
-                                        </HBox>
-                                        <HBox alignment="CENTER_LEFT">
-                                            <children>
-                                                <Label maxWidth="1.7976931348623157E308" text="Bases de données - 2024 - S1" textFill="#575757" HBox.hgrow="ALWAYS">
-                                                    <font><Font name="System Bold" size="13.0" /></font>
-                                                </Label>
-                                                <Button mnemonicParsing="false" style="-fx-background-color: #28a745; -fx-background-radius: 8;" text="Validée" textFill="WHITE">
-                                                    <font><Font name="System Bold" size="12.0" /></font>
-                                                </Button>
-                                            </children>
-                                        </HBox>
-
-                                    </children>
-
-                                </VBox>
-
+                                <Label text="UE Validées" textFill="#757575"><font><Font name="System Bold" size="14.0" /></font></Label>
+                                <VBox fx:id="containerUeValidees" spacing="10.0" />
                             </children>
                         </VBox>
+
                         <HBox alignment="CENTER_RIGHT" spacing="15.0">
-                            <padding>
-                                <Insets top="10.0" />
-                            </padding>
+                            <padding><Insets top="10.0" /></padding>
                             <children>
-                                <Button mnemonicParsing="false" onAction="#handleAnnulerTout" style="-fx-background-color: #6c757d; -fx-background-radius: 8; -fx-cursor: hand;" text="Tout effacer" textFill="WHITE">
-                                    <font>
-                                        <Font name="System Bold" size="13.0" />
-                                    </font>
-                                    <padding>
-                                        <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
-                                    </padding>
+                                <Button onAction="#handleAnnulerTout" style="-fx-background-color: #6c757d; -fx-background-radius: 8;" text="Tout effacer" textFill="WHITE">
+                                    <font><Font name="System Bold" size="13.0" /></font>
+                                    <padding><Insets bottom="8.0" left="15.0" right="15.0" top="8.0" /></padding>
                                 </Button>
-
-                                <Button mnemonicParsing="false" onAction="#handleAnnulerDernier" style="-fx-background-color: #dc3545; -fx-background-radius: 8; -fx-cursor: hand;" text="Annuler la dernière" textFill="WHITE">
-                                    <font>
-                                        <Font name="System Bold" size="13.0" />
-                                    </font>
-                                    <padding>
-                                        <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
-                                    </padding>
+                                <Button onAction="#handleAnnulerDernier" style="-fx-background-color: #dc3545; -fx-background-radius: 8;" text="Annuler la dernière" textFill="WHITE">
+                                    <font><Font name="System Bold" size="13.0" /></font>
+                                    <padding><Insets bottom="8.0" left="15.0" right="15.0" top="8.0" /></padding>
                                 </Button>
-
-                                <Button mnemonicParsing="false" onAction="#handleEnregistrer" style="-fx-background-color: #28a745; -fx-background-radius: 8; -fx-cursor: hand;" text="Enregistrer" textFill="WHITE">
-                                    <font>
-                                        <Font name="System Bold" size="13.0" />
-                                    </font>
-                                    <padding>
-                                        <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
-                                    </padding>
+                                <Button onAction="#handleEnregistrer" style="-fx-background-color: #28a745; -fx-background-radius: 8;" text="Enregistrer" textFill="WHITE">
+                                    <font><Font name="System Bold" size="13.0" /></font>
+                                    <padding><Insets bottom="8.0" left="15.0" right="15.0" top="8.0" /></padding>
                                 </Button>
                             </children>
                         </HBox>
                     </children>
                 </VBox>
-
             </children>
         </HBox>
     </content>
