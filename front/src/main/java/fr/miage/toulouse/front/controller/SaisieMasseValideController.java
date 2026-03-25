@@ -62,9 +62,11 @@ public class SaisieMasseValideController {
     }
 
 
+/*
+    Affiche l'UE selectionné
 
-
-
+    Fait appel à la méthode getEtudiantsInscrits(UE ue) pour avoir la liste des étudiants insrit à l'UE sélectionné
+     */
     public void setUeSelectionne(Ue ue){
         this.ueSelectionne = ue;
         if (this.ueSelectionne != null){
@@ -83,11 +85,9 @@ public class SaisieMasseValideController {
 
     /**
      * Gère l'événement de clic sur le bouton de retour.
-     * <p>
      * Sollicite le {@link MainController} préalablement injecté pour réafficher la vue
      * de gestion des UE. Si le contrôleur principal est manquant (problème d'injection),
      * une erreur est signalée dans la console pour faciliter le débogage.
-     * </p>
      *
      * @param event L'événement déclenché par le clic de l'utilisateur sur le bouton.
      */

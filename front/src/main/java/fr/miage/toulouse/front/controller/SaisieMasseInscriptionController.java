@@ -94,12 +94,14 @@ public class SaisieMasseInscriptionController {
 /*
 Retourne sur la page UE
  */
-
     @FXML
     private void handleRetour(ActionEvent event) {
         if (mainController != null) mainController.handleUe();
     }
 
+    /*
+    selectionne les étudiants
+     */
     @FXML
     private void handleSelectAll() {
         boolean selected = checkAll.isSelected();
@@ -111,7 +113,10 @@ Retourne sur la page UE
         // Force le tableau à se rafraîchir pour que les cases se cochent visuellement
         tableEtudiants.refresh();
     }
-
+    /**
+     Gère la validation collective des inscriptions pour l'UE sélectionnée.
+     Récupère la liste des étudiants cochés dans le tableau pour enregistrer massivement leur réussite
+     */
     @FXML
     private void handleValiderMasse(ActionEvent event) {
         Request req = new Request();
