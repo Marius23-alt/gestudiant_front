@@ -3,6 +3,7 @@ package fr.miage.toulouse.front;
 
 
 public class Launcher {
+
     /**
      * Point d'entrée alternatif pour le lancement de l'application.
      * <p>

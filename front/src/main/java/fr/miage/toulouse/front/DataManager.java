@@ -1,6 +1,7 @@
 package fr.miage.toulouse.front;
 
 import fr.miage.toulouse.cours.Etudiant;
+import fr.miage.toulouse.cours.Inscription;
 import fr.miage.toulouse.cours.Ue;
 import fr.miage.toulouse.database.Request;
 
@@ -70,6 +71,9 @@ public class DataManager {
         this.listeEtudiants = req.recupTousLesEtudiants();
         this.listeUe = req.recupToutesLesUe();
 
+        System.out.println(this.listeEtudiants.size() + " étudiants chargés");
+        System.out.println(this.listeUe.size() + " UE chargées");
+
         // On relie les étudiants et les UEs
         req.lierInscriptionsEnMemoire(this.listeEtudiants, this.listeUe);
     }
@@ -80,15 +84,11 @@ public class DataManager {
      */
     public void ajouterEtudiantMemoire(Etudiant e) {
         this.listeEtudiants.add(e);
-        System.out.println("🧠 DataManager : " + e.getNom() + " ajouté en mémoire !");
+        System.out.println("DataManager : " + e.getNom() + " ajouté en mémoire !");
     }
 
 
     // ------- METHODE POUR LES FILTRES ----------
-
-    public String getAnneeUniversitaireCourante() {
-        return anneeUniversitaireCourante;
-    }
 
     /**
      * Indique si l'université est actuellement sur un semestre impair (Automne: S1, S3, S5)
@@ -177,6 +177,16 @@ public class DataManager {
     }
 
     // --- Getters ---
+
+    /**
+     * Extrait et retourne la l'année universitaire courante.
+     *
+     * @return Un String
+     */
+
+    public String getAnneeUniversitaireCourante() {
+        return anneeUniversitaireCourante;
+    }
     /**
      * Retourne la liste complète des étudiants actuellement stockée en mémoire.
      *
@@ -191,6 +201,120 @@ public class DataManager {
      */
     public List<Ue> getListeUes() {
         return listeUe;
+    }
+
+
+    // ------- METHODE POUR RECUP LES ÉTUDIANTS DANS SAISIE DE MASSE ----------
+
+    /**
+     * Retourne une liste d'étudiants selon des paramètres de filtrage qui ont au moins une ue en cours
+     * @param mention la mention de filtrage
+     * @param parcours le parcours de filtarge
+     * @param semestre le semestre de filtrage
+     * @return une liste d'étudiants qui ont une UE en cours
+     */
+    public List<Etudiant> getEtudiantEnCours(String mention, String parcours, String semestre) {
+
+        List<Etudiant> etuEnCours = new ArrayList<>();
+
+        List<Etudiant> etudiants = getEtudiantsFiltres(mention, parcours, semestre);
+
+        for (Etudiant e : etudiants) {
+            for (Inscription i : e.getInscription()) {
+                if (i.getStatut().equals("en_cours")) {
+                    etuEnCours.add(e);
+                    // éviter les doublons si il y a plusieurs ue en cours
+                    break;
+                }
+            }
+        }
+        return etuEnCours;
+    }
+/*
+Retourne une liste d'étudiants inscrit à l'ue selectionné
+
+ */
+
+    public List<Etudiant> getEtudiantsInscritsA(Ue ueSelectionne) {
+        List<Etudiant> resultat = new ArrayList<>();
+        String anneeCourante = getAnneeUniversitaireCourante();
+
+        for (Etudiant e : this.listeEtudiants) {
+            for (Inscription i : e.getInscription()) {
+                if (i.getUe().getCode().equals(ueSelectionne.getCode())) {
+
+
+                    if (i.getStatut().equals("en_cours") && i.getAnnee().equals(anneeCourante)) {
+                        System.out.println("ÉTUDIANT AJOUTÉ AU TABLEAU !");
+                        resultat.add(e);
+                        break;
+                    }
+                }
+            }
+        }
+        System.out.println(resultat.size() + " étudiants affichés dans le tableau");
+        return resultat;
+    }
+
+    public List<Etudiant> getEtudiantsAutorisesA(Ue ueSelectionne) {
+        List<Etudiant> resultat = new ArrayList<>();
+        String anneeCourante = getAnneeUniversitaireCourante();
+        boolean isSaisonImpaire = isSemestreImpair();
+
+        boolean ueEstImpaire = (ueSelectionne.getSemestre() % 2 != 0);
+        if (ueEstImpaire != isSaisonImpaire) {
+            return resultat;
+        }
+        for (Etudiant e : this.listeEtudiants) {
+            if (!e.getParcour().getNom().equals(ueSelectionne.getParcour().getNom())) {
+                continue;
+            }
+
+            boolean dejaPris = false;
+            boolean prerequisOk = true;
+
+            String prereq = ueSelectionne.getCodeUePrecedente();
+            if (prereq != null && !prereq.trim().isEmpty()) {
+                prerequisOk = false;
+                for (Inscription i : e.getInscription()) {
+                    if (i.getUe().getCode().equals(prereq) && i.getStatut().equals("valide")) {
+                        prerequisOk = true;
+                        break;
+                    }
+                }
+            }
+
+            for (Inscription i : e.getInscription()) {
+                if (i.getUe().getCode().equals(ueSelectionne.getCode())) {
+                    if (i.getStatut().equals("valide") ||
+                            i.getStatut().equals("en_cours") ||
+                            (i.getStatut().equals("echoue") && i.getAnnee().equals(anneeCourante))) {
+                        dejaPris = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!dejaPris && prerequisOk) {
+                resultat.add(e);
+            }
+        }
+        return resultat;
+    }
+
+    //      -----SETTER--------
+
+    public void setAnneeUniversitaireCourante(String anneeUniversitaireCourante){
+        this.anneeUniversitaireCourante = anneeUniversitaireCourante;
+    }
+
+    public void setSemestreImpair(Boolean semestreImpair){
+        this.isSemestreImpair = semestreImpair;
+    }
+
+
+    public boolean supprimerEtudiant(Etudiant etudiant){
+        return this.listeEtudiants.remove(etudiant);
     }
 }
 
