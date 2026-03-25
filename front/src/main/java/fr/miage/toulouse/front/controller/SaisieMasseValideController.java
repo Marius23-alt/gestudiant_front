@@ -69,7 +69,6 @@ public class SaisieMasseValideController {
         this.ueSelectionne = ue;
         if (this.ueSelectionne != null){
             lblContexte.setText("Mode Saisie de masse pour l'UE " + this.ueSelectionne.getNom());
-            // Correction du texte pour que ce soit cohérent avec la validation
             btnValiderMasse.setText("Valider l'UE pour les sélectionnés");
         }
 
@@ -156,9 +155,6 @@ public class SaisieMasseValideController {
         }
     }
 
-    /**
-     * Coche ou décoche tous les étudiants présents dans le tableau.
-     */
 
 
     // --- Setters ----

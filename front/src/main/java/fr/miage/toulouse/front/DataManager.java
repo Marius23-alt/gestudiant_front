@@ -202,6 +202,7 @@ public class DataManager {
     public List<Ue> getListeUes() {
         return listeUe;
     }
+    // ------- METHODE POUR RECUP LES ÉTUDIANTS DANS SAISIE DE MASSE ----------
 
 
     /**
@@ -229,7 +230,7 @@ public class DataManager {
         return etuEnCours;
     }
 
-    // ------- METHODE POUR RECUP LES ÉTUDIANTS DANS SAISIE DE MASSE ----------
+         //Retourne une liste d'étudiants sont inscrit à l'ue selectionné
 
 
     public List<Etudiant> getEtudiantsInscritsA(Ue ueSelectionne) {
