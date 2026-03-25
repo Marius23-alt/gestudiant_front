@@ -41,7 +41,6 @@ public class SaisieMasseInscriptionController {
      * Définit le texte d'attente du contexte, lie les colonnes du tableau aux attributs
      * de l'objet Etudiant et injecte la liste observable dans la vue.
      */
-
     @FXML
     public void initialize() {
         lblContexte.setText("Chargement...");
@@ -92,6 +91,9 @@ public class SaisieMasseInscriptionController {
         List<Etudiant> etudiants = DataManager.getInstance().getEtudiantsAutorisesA(this.ueSelectionne);
         listeEtudiants.setAll(etudiants);
     }
+/*
+Retourne sur la page UE
+ */
 
     @FXML
     private void handleRetour(ActionEvent event) {
