@@ -269,5 +269,10 @@ public class DataManager {
     public void setSemestreImpair(Boolean semestreImpair){
         this.isSemestreImpair = semestreImpair;
     }
+
+
+    public boolean supprimerEtudiant(Etudiant etudiant){
+        return this.listeEtudiants.remove(etudiant);
+    }
 }
 

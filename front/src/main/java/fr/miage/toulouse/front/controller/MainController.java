@@ -96,9 +96,9 @@ public class MainController {
      */
     @FXML
     private void handleDashboard() {
-        if (activeButton == btnStat && !contentArea.getChildren().isEmpty()) {
+        /*if (activeButton == btnStat && !contentArea.getChildren().isEmpty()) {
             return;
-        }
+        }*/
 
         setActiveButton(btnStat);
         try {
@@ -440,6 +440,13 @@ public class MainController {
         if (titleText != null) {
             titleText.setText(titre);
         }
+    }
+
+    /**
+     * Permet de revenir au menuprincipal avec le dashboard
+     */
+    public void retourDashBord(){
+        handleDashboard();
     }
 
 }
