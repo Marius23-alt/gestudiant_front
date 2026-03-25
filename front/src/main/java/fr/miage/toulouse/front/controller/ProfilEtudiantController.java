@@ -96,8 +96,7 @@ public class ProfilEtudiantController {
         containerUeEchouees.getChildren().add(new Label("Aucun échec."));
         containerUeValidees.getChildren().add(new Label("Aucune UE validée."));
 
-        HBox fausseLigne = creerLigneUe("UE Test (Générée en Java)", "2024", "S" + semestreChoisi, "Inscrire", "#ffc107");
-        containerUeAutorises.getChildren().add(fausseLigne);
+        calculerUesAutorisees(etudiant);
     }
 
     /**
@@ -116,24 +115,27 @@ public class ProfilEtudiantController {
 
         System.out.println("Profil chargé pour : " + etudiant.getNom() + " " + etudiant.getPrenom());
 
-        //on vide les données écrites en dur dans le fichier FXML
         viderConteneurs();
 
-        // On met à jour les informations globales (ECTS et Semestre)
-        if (textEcts != null) textEcts.setText("ECTS : " + etudiant.getNbEcts() + "/180");
+        int totalEctsEnDirect = 0;
+        if (etudiant.getInscription() != null) {
+            for (Inscription i : etudiant.getInscription()) {
+                if ("valide".equalsIgnoreCase(i.getStatut())) {
+                    totalEctsEnDirect += i.getUe().getNbCredit();
+                }
+            }
+        }
+
+        if (textEcts != null) textEcts.setText("ECTS : " + totalEctsEnDirect + "/180");
         if (textAnneeSemestre != null) textAnneeSemestre.setText("Semestre Actuel : S" + etudiant.getSemestreActuel());
+        if (ectsArc != null) ectsArc.setLength((double) totalEctsEnDirect * 2);
 
-        if (ectsArc != null) ectsArc.setLength((double) etudiant.getNbEcts() * 2);
-
-        // on parcourt les  inscriptions de l'étudiant pour les classer
         if (etudiant.getInscription() != null) {
             for (Inscription inscr : etudiant.getInscription()) {
-
                 String nomUe = inscr.getUe().getNom();
                 String annee = inscr.getAnnee();
                 String semestre = "S" + inscr.getUe().getSemestre();
 
-                // On met l'affichage dans la bonne VBox selon le statut de l'inscription
                 switch (inscr.getStatut().toLowerCase()) {
                     case "valide":
                         containerUeValidees.getChildren().add(creerLigneUe(nomUe, annee, semestre, "Validée", "#28a745"));
@@ -148,19 +150,39 @@ public class ProfilEtudiantController {
             }
         }
 
-        // Si  boîte  vide après  tri => message
-        if (containerUeEnCours.getChildren().isEmpty()) {
-            containerUeEnCours.getChildren().add(new Label("Aucune UE en cours."));
-        }
-        if (containerUeValidees.getChildren().isEmpty()) {
-            containerUeValidees.getChildren().add(new Label("Aucune UE validée."));
-        }
-        if (containerUeEchouees.getChildren().isEmpty()) {
-            containerUeEchouees.getChildren().add(new Label("Aucun échec."));
+        if (containerUeEnCours.getChildren().isEmpty()) containerUeEnCours.getChildren().add(new Label("Aucune UE en cours."));
+        if (containerUeValidees.getChildren().isEmpty()) containerUeValidees.getChildren().add(new Label("Aucune UE validée."));
+        if (containerUeEchouees.getChildren().isEmpty()) containerUeEchouees.getChildren().add(new Label("Aucun échec."));
+
+        calculerUesAutorisees(etudiant);
+    }
+
+    /**
+     * Calcule en temps réel le total des ECTS validés (y compris les modifs non enregistrées)
+     * et met à jour le cercle (Arc) et le texte à l'écran.
+     */
+    private void mettreAJourAffichageEcts() {
+        if (etudiantCourant == null) return;
+
+        // 1. On calcule le total en parcourant les inscriptions en mémoire
+        int totalEctsLive = 0;
+        for (Inscription inscr : etudiantCourant.getInscription()) {
+            if ("valide".equalsIgnoreCase(inscr.getStatut())) {
+                totalEctsLive += inscr.getUe().getNbCredit();
+            }
         }
 
-        //  on affiche les UEs autorisées pour le semestre courant
-        calculerUesAutorisees(etudiant);
+        // 2. Mise à jour du texte (Ex: 120/180)
+        if (textEcts != null) {
+            textEcts.setText("ECTS : " + totalEctsLive + "/180");
+        }
+
+        // 3. Mise à jour de l'arc (Cercle de progression)
+        // 180 ECTS = 360 degrés, donc on multiplie par 2
+        if (ectsArc != null) {
+            double angle = (double) totalEctsLive * 2;
+            ectsArc.setLength(angle);
+        }
     }
 
     /**
