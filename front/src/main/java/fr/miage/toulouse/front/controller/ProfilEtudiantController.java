@@ -566,7 +566,7 @@ public class ProfilEtudiantController {
         }
     }
 
-// --- Setters ---
+// --- Setters ----
 
 public void setMainController(MainController mainController) {
     this.mainController = mainController;
