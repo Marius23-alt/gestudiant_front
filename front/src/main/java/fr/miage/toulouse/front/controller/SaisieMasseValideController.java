@@ -1,6 +1,7 @@
 package fr.miage.toulouse.front.controller;
 
 import fr.miage.toulouse.cours.Etudiant;
+import fr.miage.toulouse.cours.Inscription;
 import fr.miage.toulouse.cours.Ue;
 import fr.miage.toulouse.front.DataManager;
 import javafx.collections.FXCollections;
@@ -9,6 +10,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.CheckBox;
+import fr.miage.toulouse.database.Request;
 
 import java.util.List;
 
@@ -20,14 +23,16 @@ public class SaisieMasseValideController {
     @FXML private TableView<Etudiant> tableEtudiants;
     @FXML private TableColumn<Etudiant, String> colNom;
     @FXML private TableColumn<Etudiant, String> colPrenom;
-    @FXML private TableColumn<Etudiant, Void> colCoche;
+    @FXML private TableColumn<Etudiant, CheckBox> colCoche;
 
     @FXML private Button btnValiderMasse;
+    private java.util.Map<Etudiant, CheckBox> mapCheckBoxes = new java.util.HashMap<>();
 
     // --- INITIALISATION ---
 
     private MainController mainController;
 
+    private Ue ueSelectionne;
 
     private ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList(); //Liste des étudiants qui sont présent quand on ouvre la page
 
@@ -43,28 +48,36 @@ public class SaisieMasseValideController {
         lblContexte.setText("Chargement...");
 
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        colPrenom.setCellValueFactory(new  PropertyValueFactory<>("prenom"));
+        colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
+
+        colCoche.setCellValueFactory(cellData -> {
+            Etudiant etu = cellData.getValue();
+            // On crée la checkbox et on la range dans la Map
+            CheckBox checkBox = new CheckBox();
+            mapCheckBoxes.put(etu, checkBox);
+            return new javafx.beans.property.SimpleObjectProperty<>(checkBox);
+        });
 
         this.tableEtudiants.setItems(listeEtudiants);
     }
 
 
-    /*
-    Affiche l'UE selectionné
 
-    Fait appel à la méthode getEtudiantsInscritsA(UE ue) pour avoir la liste des étudiants insrit à l'UE sélectionné
-     */
 
-    public void setUeSelectionne(Ue ue){ // l'UE qui est cliqué sur la page UE
-        if (ue != null){
-            lblContexte.setText("Mode Saisie de masse pour l'UE " + ue.getNom());
-            btnValiderMasse.setText("Valider à " + ue.getNom());
+
+    public void setUeSelectionne(Ue ue){
+        this.ueSelectionne = ue;
+        if (this.ueSelectionne != null){
+            lblContexte.setText("Mode Saisie de masse pour l'UE " + this.ueSelectionne.getNom());
+            // Correction du texte pour que ce soit cohérent avec la validation
+            btnValiderMasse.setText("Valider l'UE pour les sélectionnés");
         }
 
-        List<Etudiant> etudiants = DataManager.getInstance().getEtudiantsInscritsA(ue);
+        // On vide la Map avant de charger les nouveaux étudiants pour éviter les restes d'une autre UE
+        mapCheckBoxes.clear();
 
+        List<Etudiant> etudiants = DataManager.getInstance().getEtudiantsInscritsA(this.ueSelectionne);
         listeEtudiants.setAll(etudiants);
-
     }
 
     // --- ACTIONS DES BOUTONS ---
@@ -98,7 +111,37 @@ public class SaisieMasseValideController {
 
     @FXML
     private void handleValiderMasse(ActionEvent event) {
-        System.out.println("Clic sur Valider Masse : Il faudra traiter les cases cochées !");
+        Request req = new Request();
+        int compteur = 0;
+        String annee = DataManager.getInstance().getAnneeUniversitaireCourante();
+
+        for (Etudiant etu : listeEtudiants) {
+            CheckBox cb = mapCheckBoxes.get(etu);
+
+            if (cb != null && cb.isSelected()) {
+                boolean succes = req.modifierStatutInscription(
+                        etu.getNumEtu(),
+                        ueSelectionne.getCode(),
+                        annee,
+                        "valide"
+                );
+
+                if (succes) {
+                    for (Inscription inscr : etu.getInscription()) {
+                        if (inscr.getUe().getCode().equals(ueSelectionne.getCode())
+                                && inscr.getAnnee().equals(annee)) {
+                            inscr.setStatut("valide");
+                            break;
+                        }
+                    }
+                    compteur++;
+                }
+            }
+        }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, compteur + " étudiant(s) ont été validés avec succès !");
+        alert.showAndWait();
+        handleRetour(null);
     }
 
     /**
@@ -107,8 +150,16 @@ public class SaisieMasseValideController {
     @FXML
     private void handleSelectAll() {
         boolean selected = checkAll.isSelected();
-        System.out.println("Tout sélectionner : " + selected);
+        // On parcourt toutes les checkboxes de notre Map et on les coche/décoche
+        for (CheckBox cb : mapCheckBoxes.values()) {
+            cb.setSelected(selected);
+        }
     }
+
+    /**
+     * Coche ou décoche tous les étudiants présents dans le tableau.
+     */
+
 
     // --- Setters ----
     public void setMainController(MainController mainController) {

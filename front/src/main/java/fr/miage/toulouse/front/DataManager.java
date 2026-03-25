@@ -234,28 +234,78 @@ public class DataManager {
 
     public List<Etudiant> getEtudiantsInscritsA(Ue ueSelectionne) {
         List<Etudiant> resultat = new ArrayList<>();
+        String anneeCourante = getAnneeUniversitaireCourante();
 
-        for (Etudiant e : this.listeEtudiants){
-            for (Inscription i : e.getInscription()){
-                if (i.getUe().equals(ueSelectionne) && i.getStatut().equals("en_cours")){
-                    resultat.add(e);
+        for (Etudiant e : this.listeEtudiants) {
+            for (Inscription i : e.getInscription()) {
+                if (i.getUe().getCode().equals(ueSelectionne.getCode())) {
+                    System.out.println("-> MATCH CODE UE pour " + e.getNom() + " " + e.getPrenom());
+                    System.out.println("   |- Statut actuel : '" + i.getStatut() + "' (Attendu : 'en_cours')");
+                    System.out.println("   |- Année actuelle : '" + i.getAnnee() + "' (Attendue : '" + anneeCourante + "')");
+
+                    if (i.getStatut().equals("en_cours") && i.getAnnee().equals(anneeCourante)) {
+                        System.out.println("ÉTUDIANT AJOUTÉ AU TABLEAU !");
+                        resultat.add(e);
+                        break;
+                    } else {
+                        System.out.println("REFUSÉ (Mauvais statut ou mauvaise année)");
+                    }
                 }
             }
         }
+        System.out.println(resultat.size() + " étudiants affichés dans le tableau");
         return resultat;
     }
 
-    public List<Etudiant> getEtudiantsAutorisesA(Ue ueSelectionne){
+    public List<Etudiant> getEtudiantsAutorisesA(Ue ueSelectionne) {
         List<Etudiant> resultat = new ArrayList<>();
+        String anneeCourante = getAnneeUniversitaireCourante();
+        boolean isSaisonImpaire = isSemestreImpair();
 
-        resultat.add(new Etudiant(2, "bidule", "chose", null, null, 1, 0));
-        resultat.add(new Etudiant(3, "machin", "truc", null, null, 1, 0));
+        // l'UE doit correspondre au semestre actuel (Pair/Impair)
+        boolean ueEstImpaire = (ueSelectionne.getSemestre() % 2 != 0);
+        if (ueEstImpaire != isSaisonImpaire) {
+            // Si la saison ne correspond pas, on retourne une liste vide.
+            return resultat;
+        }
 
+        for (Etudiant e : this.listeEtudiants) {
+            //Il doit être dans le même parcours que l'UE
+            if (!e.getParcour().getNom().equals(ueSelectionne.getParcour().getNom())) {
+                continue;
+            }
 
-        for (Etudiant e : this.listeEtudiants){
-            //ajouter tous les étudiants autorisé à faire ueSelectionne à resultat
-            // S'inspirer méthode avant
+            boolean dejaPris = false;
+            boolean prerequisOk = true;
 
+            //Gestion du prérequis
+            String prereq = ueSelectionne.getCodeUePrecedente();
+            if (prereq != null && !prereq.trim().isEmpty()) {
+                prerequisOk = false;
+                for (Inscription i : e.getInscription()) {
+                    if (i.getUe().getCode().equals(prereq) && i.getStatut().equals("valide")) {
+                        prerequisOk = true;
+                        break;
+                    }
+                }
+            }
+
+            //L'a-t-il déjà validée, l'a-t-il en cours, ou l'a-t-il échouée CETTE année ?
+            for (Inscription i : e.getInscription()) {
+                if (i.getUe().getCode().equals(ueSelectionne.getCode())) {
+                    if (i.getStatut().equals("valide") ||
+                            i.getStatut().equals("en_cours") ||
+                            (i.getStatut().equals("echoue") && i.getAnnee().equals(anneeCourante))) {
+                        dejaPris = true;
+                        break;
+                    }
+                }
+            }
+
+            // S'il est clean et a les prérequis, on l'autorise !
+            if (!dejaPris && prerequisOk) {
+                resultat.add(e);
+            }
         }
         return resultat;
     }
