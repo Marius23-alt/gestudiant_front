@@ -74,7 +74,6 @@ public class SaisieMasseValideController {
             btnValiderMasse.setText("Valider l'UE pour les sélectionnés");
         }
 
-        // On vide la Map avant de charger les nouveaux étudiants pour éviter les restes d'une autre UE
         mapCheckBoxes.clear();
 
         List<Etudiant> etudiants = DataManager.getInstance().getEtudiantsInscritsA(this.ueSelectionne);
@@ -149,7 +148,6 @@ public class SaisieMasseValideController {
     @FXML
     private void handleSelectAll() {
         boolean selected = checkAll.isSelected();
-        // On parcourt toutes les checkboxes de notre Map et on les coche/décoche
         for (CheckBox cb : mapCheckBoxes.values()) {
             cb.setSelected(selected);
         }

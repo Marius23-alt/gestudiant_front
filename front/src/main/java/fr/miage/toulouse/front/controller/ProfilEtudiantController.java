@@ -164,7 +164,6 @@ public class ProfilEtudiantController {
     private void mettreAJourAffichageEcts() {
         if (etudiantCourant == null) return;
 
-        // 1. On calcule le total en parcourant les inscriptions en mémoire
         int totalEctsLive = 0;
         for (Inscription inscr : etudiantCourant.getInscription()) {
             if ("valide".equalsIgnoreCase(inscr.getStatut())) {
@@ -172,13 +171,10 @@ public class ProfilEtudiantController {
             }
         }
 
-        // 2. Mise à jour du texte (Ex: 120/180)
         if (textEcts != null) {
             textEcts.setText("ECTS : " + totalEctsLive + "/180");
         }
 
-        // 3. Mise à jour de l'arc (Cercle de progression)
-        // 180 ECTS = 360 degrés, donc on multiplie par 2
         if (ectsArc != null) {
             double angle = (double) totalEctsLive * 2;
             ectsArc.setLength(angle);
@@ -248,7 +244,6 @@ public class ProfilEtudiantController {
             }
         }
 
-        // On isole les UEs EN COURS (Pour ne pas les proposer à nouveau)
         List<String> codesEnCours = etudiant.getInscription().stream()
                 .filter(inscr -> inscr.getStatut().equals("en_cours"))
                 .map(inscr -> inscr.getUe().getCode())
@@ -260,32 +255,25 @@ public class ProfilEtudiantController {
                 .toList();
 
         List<Ue> uesAutorisees = toutesLesUes.stream()
-                // A. L'UE doit faire partie de son parcours
                 .filter(ue -> ue.getParcour().getNom().equals(etudiant.getParcour().getNom()))
 
-                // B. L'UE doit correspondre à la saison actuelle (Automne=Impair, Printemps=Pair)
                 .filter(ue -> (ue.getSemestre() % 2 != 0) == isSemestreGlobalImpair)
 
-                // C. L'étudiant ne doit pas l'avoir déjà validée, ni l'avoir en cours, NI l'avoir échouée cette année !
                 .filter(ue -> !codesValides.contains(ue.getCode())
                         && !codesEnCours.contains(ue.getCode())
                         && !codesEchouesCetteAnnee.contains(ue.getCode()))
 
-                // D. LA RÈGLE DE L'UE PRÉCÉDENTE
                 .filter(ue -> {
                     String prerequis = ue.getCodeUePrecedente();
 
-                    // Si prerequis est null (ou vide), c'est une matière de S1, elle est ouverte par défaut !
                     if (prerequis == null || prerequis.trim().isEmpty()) {
                         return true;
                     }
 
-                    // Sinon, on vérifie que l'étudiant a bien ce code précédent dans ses matières validées
                     return codesValides.contains(prerequis);
                 })
                 .toList();
 
-        // 4. Affichage Visuel
         if (uesAutorisees.isEmpty()) {
             Label lblVide = new Label("Aucune UE disponible à l'inscription pour ce semestre (Prérequis manquants ou parcours terminé).");
             lblVide.setTextFill(javafx.scene.paint.Color.web("#757575"));
@@ -459,7 +447,6 @@ public class ProfilEtudiantController {
 
             System.out.println("Dernière inscription annulée.");
         }
-        // Sinon, si changements de statut, on annule le dernier changement
         else if (!changementsStatutEnAttente.isEmpty()) {
             int index = changementsStatutEnAttente.size() - 1;
             Inscription derniereAction = changementsStatutEnAttente.get(index);
@@ -470,7 +457,6 @@ public class ProfilEtudiantController {
             System.out.println("Dernier changement de statut annulé.");
         }
 
-        // On rafraîchit l'écran
         setEtudiant(etudiantCourant);
     }
 
@@ -502,15 +488,12 @@ public class ProfilEtudiantController {
     @FXML
     public void handleModifierProfil() {
         try {
-            // On charge le fichier visuel de la pop-up
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/fxml/modifierProfil.fxml"));
             javafx.scene.Parent root = loader.load();
 
-            // On envoie l'étudiant actuel au contrôleur de la pop-up
             fr.miage.toulouse.front.controller.ModifierProfilController controller = loader.getController();
             controller.initData(etudiantCourant, this);
 
-            // On crée la fenêtre et on l'affiche
             javafx.stage.Stage stage = new javafx.stage.Stage();
             stage.setTitle("Modifier Profil");
             stage.setScene(new javafx.scene.Scene(root));
@@ -568,7 +551,6 @@ public class ProfilEtudiantController {
             }
 
         } else {
-            // L’utilisateur a cliqué sur Annuler
             System.out.println("Suppression annulée par l'utilisateur.");
         }
     }

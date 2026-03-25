@@ -99,15 +99,12 @@ public class AjouterEtudiantController {
                 return;
             }
 
-            // Création de l'étudiant
-            // par défault 0 ects
+
             Etudiant nouvelEtudiant = new Etudiant(numEtu, nom, prenom, dateNaiss,parcoursChoisi, semestreChoisiInt, 0);
 
-            // Sauvegarde dans BDD
             Request req = new Request();
             if (req.ajouterEtudiant(nouvelEtudiant)) {
 
-                // Ajout dans la mémoire vive
                 DataManager.getInstance().ajouterEtudiantMemoire(nouvelEtudiant);
 
                 String semestreChoisiStr = comboSemestre.getValue();

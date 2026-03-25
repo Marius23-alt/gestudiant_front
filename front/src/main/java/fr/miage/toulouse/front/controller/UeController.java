@@ -53,13 +53,10 @@ public class UeController {
     public void initialize() {
         lblTitreUe.setText("Page de gestion des UE");
 
-        // Configuration des colonnes (noms + boutons d'action)
         configurerColonnesTableau();
 
-        // On prépare les listes déroulantes
         initialiserFiltres();
 
-        // On applique les filtres une première fois pour remplir le tableau
         appliquerFiltres();
     }
 
@@ -139,25 +136,21 @@ public class UeController {
     private void initialiserFiltres() {
         DataManager dm = DataManager.getInstance();
 
-        // 1. Remplissage de la Mention
         comboMention.getItems().clear();
         comboMention.getItems().add("Toutes les mentions");
         comboMention.getItems().addAll(dm.getToutesLesMentions());
         comboMention.getSelectionModel().selectFirst();
 
-        // 2. Configuration Initiale des Parcours (Désactivé par défaut)
         comboParcours.getItems().clear();
         comboParcours.getItems().add("Tous les parcours");
         comboParcours.getSelectionModel().selectFirst();
         comboParcours.setDisable(true);
 
-        // 3. Remplissage des Semestres (Pour les UEs, ça va de 1 à 6)
         comboSemestre.getItems().clear();
         comboSemestre.getItems().add("Tous les semestres");
         comboSemestre.getItems().addAll("1", "2", "3", "4", "5", "6");
         comboSemestre.getSelectionModel().selectFirst();
 
-        // 4. Ajout des actions lors d'un clic
         comboMention.setOnAction(event -> {
             mettreAJourComboParcours();
             appliquerFiltres();
@@ -194,10 +187,8 @@ public class UeController {
         String parcours = comboParcours.getValue();
         String semestre = comboSemestre.getValue();
 
-        // On appelle la méthode que tu avais déjà préparée dans DataManager !
         List<Ue> uesFiltrees = DataManager.getInstance().getUeFiltres(mention, parcours, semestre);
 
-        // On met à jour l'affichage
         listeUesAffichables.setAll(uesFiltrees);
         tableUe.setItems(listeUesAffichables);
     }

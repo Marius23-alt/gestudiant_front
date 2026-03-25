@@ -414,6 +414,7 @@ public class MainController {
 
     // --- Setters ---
 
+
     /**
      * Gère l'apparence visuelle de la navigation et indique sur quelle on est
      * @param clickedButton Le bouton cliqué par l'utilisateur

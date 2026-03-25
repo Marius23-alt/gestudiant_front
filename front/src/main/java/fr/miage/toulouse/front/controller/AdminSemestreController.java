@@ -45,12 +45,10 @@ public class AdminSemestreController {
 
     @FXML
     public void initialize() {
-        // Initialisation des ComboBox de Simulation
         comboAnneeSimu.getItems().addAll("2024-2025", "2025-2026", "2026-2027", "2027-2028");
         comboSaisonSimu.getItems().addAll("Semestre Impair (Automne)", "Semestre Pair (Printemps)");
         mettreAJourLabelHorloge();
 
-        // Initialisation des filtres du tableau (On récupère les listes depuis DataManager)
         comboMention.getItems().add("Toutes");
         comboMention.getItems().addAll(DataManager.getInstance().getToutesLesMentions());
         comboMention.getSelectionModel().selectFirst();
@@ -62,7 +60,6 @@ public class AdminSemestreController {
         comboSemestre.getItems().addAll("Tous", "1", "2", "3", "4", "5", "6");
         comboSemestre.getSelectionModel().selectFirst();
 
-        // Configuration des colonnes du tableau
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
         colNumEtudiant.setCellValueFactory(new PropertyValueFactory<>("numEtu"));
@@ -74,35 +71,28 @@ public class AdminSemestreController {
 
         ajouterBoutonProfilDansTableau();
 
-        // Ajout des listeners, dès qu'on change un filtre ou qu'on tape une recherche => maj du tabelau
         comboMention.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                // on vide la liste des parcours
                 comboParcours.getItems().clear();
                 comboParcours.getItems().add("Tous");
 
-                //  On reremplit avec les bons parcours
                 if (newVal.equals("Toutes")) {
                     comboParcours.getItems().addAll(DataManager.getInstance().getTousLesParcours());
                 } else {
                     comboParcours.getItems().addAll(DataManager.getInstance().getParcoursParMention(newVal));
                 }
 
-                //On resélectionne "Tous" par défaut
                 comboParcours.getSelectionModel().selectFirst();
 
-                //maj tableau
                 chargerDonneesTableau();
             }
         });
 
-        // Les autres écouteurs restent normaux
         comboParcours.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) chargerDonneesTableau();
         });
         comboSemestre.valueProperty().addListener((obs, oldVal, newVal) -> chargerDonneesTableau());
         searchField.textProperty().addListener((obs, oldVal, newVal) -> chargerDonneesTableau());
-        // chargement données
         chargerDonneesTableau();
     }
 
@@ -118,7 +108,6 @@ public class AdminSemestreController {
 
         List<Etudiant> etudiantsFiltres = DataManager.getInstance().getEtudiantEnCours(mention, parcours, semestre);
 
-        // On applique en plus la barre de recherche textuelle
         List<Etudiant> resultatFinal = etudiantsFiltres.stream()
                 .filter(e -> e.getNom().toLowerCase().contains(recherche) ||
                         e.getPrenom().toLowerCase().contains(recherche) ||
@@ -180,7 +169,6 @@ public class AdminSemestreController {
 
         boolean isImpair = saisonChoisie.contains("Impair");
 
-        // On modifie l'horloge du DataManager en direct !
         DataManager.getInstance().setAnneeUniversitaireCourante(anneeChoisie);
         DataManager.getInstance().setSemestreImpair(isImpair);
 
@@ -215,7 +203,6 @@ public class AdminSemestreController {
             Request req = new Request();
             int compteurModifs = 0;
 
-            // On parcourt tous les étudiants du tableau (ceux qui sont en retard)
             for (Etudiant e : masterData) {
                 for (Inscription inscr : e.getInscription()) {
                     if (inscr.getStatut().equals("en_cours")) {
@@ -232,7 +219,6 @@ public class AdminSemestreController {
                 }
             }
 
-            // On rafraîchit le tableau (devient vide)
             chargerDonneesTableau();
 
             Alert info = new Alert(Alert.AlertType.INFORMATION, "Clôture terminée. " + compteurModifs + " matières ont été passées en 'Échouée'.");

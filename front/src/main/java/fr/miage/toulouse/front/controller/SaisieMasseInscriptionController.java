@@ -32,7 +32,6 @@ public class SaisieMasseInscriptionController {
     private Ue ueSelectionne;
     private ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList();
 
-    // NOUVEAU : Une liste ultra-sécurisée pour stocker tes clics
     private List<Etudiant> etudiantsSelectionnes = new ArrayList<>();
 
 
@@ -48,15 +47,12 @@ public class SaisieMasseInscriptionController {
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
 
-        // NOUVEAU : Gestion pare-balles des cases à cocher
         colCoche.setCellValueFactory(cellData -> {
             Etudiant etu = cellData.getValue();
             CheckBox checkBox = new CheckBox();
 
-            // Si on a fait "Tout sélectionner", on s'assure que la case s'affiche cochée
             checkBox.setSelected(etudiantsSelectionnes.contains(etu));
 
-            // On écoute le clic physique de la souris
             checkBox.setOnAction(e -> {
                 if (checkBox.isSelected()) {
                     if (!etudiantsSelectionnes.contains(etu)) etudiantsSelectionnes.add(etu);
@@ -84,7 +80,6 @@ public class SaisieMasseInscriptionController {
             btnValiderMasse.setText("Inscrire les sélectionnés");
         }
 
-        // On remet tout à zéro
         etudiantsSelectionnes.clear();
         if (checkAll != null) checkAll.setSelected(false);
 

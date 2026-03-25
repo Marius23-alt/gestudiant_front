@@ -202,8 +202,9 @@ public class DataManager {
     public List<Ue> getListeUes() {
         return listeUe;
     }
-    // ------- METHODE POUR RECUP LES ÉTUDIANTS DANS SAISIE DE MASSE ----------
 
+
+    // ------- METHODE POUR RECUP LES ÉTUDIANTS DANS SAISIE DE MASSE ----------
 
     /**
      * Retourne une liste d'étudiants selon des paramètres de filtrage qui ont au moins une ue en cours
@@ -229,9 +230,10 @@ public class DataManager {
         }
         return etuEnCours;
     }
+/*
+Retourne une liste d'étudiants inscrit à l'ue selectionné
 
-         //Retourne une liste d'étudiants sont inscrit à l'ue selectionné
-
+ */
 
     public List<Etudiant> getEtudiantsInscritsA(Ue ueSelectionne) {
         List<Etudiant> resultat = new ArrayList<>();
@@ -240,16 +242,12 @@ public class DataManager {
         for (Etudiant e : this.listeEtudiants) {
             for (Inscription i : e.getInscription()) {
                 if (i.getUe().getCode().equals(ueSelectionne.getCode())) {
-                    System.out.println("-> MATCH CODE UE pour " + e.getNom() + " " + e.getPrenom());
-                    System.out.println("   |- Statut actuel : '" + i.getStatut() + "' (Attendu : 'en_cours')");
-                    System.out.println("   |- Année actuelle : '" + i.getAnnee() + "' (Attendue : '" + anneeCourante + "')");
+
 
                     if (i.getStatut().equals("en_cours") && i.getAnnee().equals(anneeCourante)) {
                         System.out.println("ÉTUDIANT AJOUTÉ AU TABLEAU !");
                         resultat.add(e);
                         break;
-                    } else {
-                        System.out.println("REFUSÉ (Mauvais statut ou mauvaise année)");
                     }
                 }
             }
@@ -263,15 +261,11 @@ public class DataManager {
         String anneeCourante = getAnneeUniversitaireCourante();
         boolean isSaisonImpaire = isSemestreImpair();
 
-        // l'UE doit correspondre au semestre actuel (Pair/Impair)
         boolean ueEstImpaire = (ueSelectionne.getSemestre() % 2 != 0);
         if (ueEstImpaire != isSaisonImpaire) {
-            // Si la saison ne correspond pas, on retourne une liste vide.
             return resultat;
         }
-
         for (Etudiant e : this.listeEtudiants) {
-            //Il doit être dans le même parcours que l'UE
             if (!e.getParcour().getNom().equals(ueSelectionne.getParcour().getNom())) {
                 continue;
             }
@@ -279,7 +273,6 @@ public class DataManager {
             boolean dejaPris = false;
             boolean prerequisOk = true;
 
-            //Gestion du prérequis
             String prereq = ueSelectionne.getCodeUePrecedente();
             if (prereq != null && !prereq.trim().isEmpty()) {
                 prerequisOk = false;
@@ -291,7 +284,6 @@ public class DataManager {
                 }
             }
 
-            //L'a-t-il déjà validée, l'a-t-il en cours, ou l'a-t-il échouée CETTE année ?
             for (Inscription i : e.getInscription()) {
                 if (i.getUe().getCode().equals(ueSelectionne.getCode())) {
                     if (i.getStatut().equals("valide") ||
@@ -303,7 +295,6 @@ public class DataManager {
                 }
             }
 
-            // S'il est clean et a les prérequis, on l'autorise !
             if (!dejaPris && prerequisOk) {
                 resultat.add(e);
             }
