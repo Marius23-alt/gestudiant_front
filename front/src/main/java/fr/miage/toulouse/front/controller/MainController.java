@@ -96,10 +96,6 @@ public class MainController {
      */
     @FXML
     private void handleDashboard() {
-        /*if (activeButton == btnStat && !contentArea.getChildren().isEmpty()) {
-            return;
-        }*/
-
         setActiveButton(btnStat);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dashboard.fxml"));

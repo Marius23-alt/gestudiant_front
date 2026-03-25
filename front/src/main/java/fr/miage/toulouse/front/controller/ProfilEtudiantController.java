@@ -211,10 +211,7 @@ public class ProfilEtudiantController {
 
         List<Ue> toutesLesUes = DataManager.getInstance().getListeUes();
 
-        // 1. On isole précisément les codes des UEs VALIDÉES (Pour vérifier qu'il a bien le niveau précédent)
-        List<String> codesEnAttente = changementsStatutEnAttente.stream()
-                .map(i -> i.getUe().getCode())
-                .toList();
+
 
         List<String> codesValides = etudiant.getInscription().stream()
                 .filter(inscr -> inscr.getStatut().equals("valide"))

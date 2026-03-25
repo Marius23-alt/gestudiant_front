@@ -30,7 +30,6 @@ public class SaisieMasseInscriptionController {
 
     private MainController mainController;
 
-    private Ue ueSelectionne; // l'UE qui est cliqué sur la page UE
 
     private ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList(); //Liste des étudiants qui sont présent quand on ouvre la page
 
@@ -59,14 +58,13 @@ public class SaisieMasseInscriptionController {
     Fait appel à la méthode getEtudiantsAutorisesA(UE ue) pour avoir la liste des étudiants insrit à l'UE sélectionné
      */
 
-    public void setUeSelectionne(Ue ue){
-        this.ueSelectionne = ue;
-        if (this.ueSelectionne != null){
-            lblContexte.setText("Mode Saisie de masse pour l'UE " + this.ueSelectionne.getNom());
-            btnValiderMasse.setText("Inscrire à " + this.ueSelectionne.getNom());
+    public void setUeSelectionne(Ue ue){ // l'UE qui est cliqué sur la page UE
+        if (ue != null){
+            lblContexte.setText("Mode Saisie de masse pour l'UE " + ue.getNom());
+            btnValiderMasse.setText("Inscrire à " + ue.getNom());
         }
 
-        List<Etudiant> etudiants = DataManager.getInstance().getEtudiantsAutorisesA(this.ueSelectionne);
+        List<Etudiant> etudiants = DataManager.getInstance().getEtudiantsAutorisesA(ue);
 
         listeEtudiants.setAll(etudiants);
     }

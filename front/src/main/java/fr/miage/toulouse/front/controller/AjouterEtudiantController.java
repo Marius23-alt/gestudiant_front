@@ -5,13 +5,10 @@ import fr.miage.toulouse.cours.Parcour;
 import fr.miage.toulouse.front.DataManager;
 import javafx.scene.control.*;
 import fr.miage.toulouse.database.Request;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 
 import java.time.LocalDate;
 
-import javafx.event.ActionEvent;
-import java.util.List;
 
 public class AjouterEtudiantController {
     @FXML private TextField fieldNumeroEtudiant;

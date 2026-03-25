@@ -1,7 +1,6 @@
 package fr.miage.toulouse.front.controller;
 
-import fr.miage.toulouse.cours.Mention;
-import fr.miage.toulouse.cours.Parcour;
+
 import fr.miage.toulouse.cours.Ue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
