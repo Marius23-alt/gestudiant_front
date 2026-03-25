@@ -6,7 +6,9 @@ import fr.miage.toulouse.cours.Ue;
 import fr.miage.toulouse.front.DataManager;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -19,17 +21,25 @@ import fr.miage.toulouse.database.Request;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ProfilEtudiantController {
 
-    @FXML private Text textEcts;
-    @FXML private Text textAnneeSemestre;
-    @FXML private Arc ectsArc;
+    @FXML
+    private Text textEcts;
+    @FXML
+    private Text textAnneeSemestre;
+    @FXML
+    private Arc ectsArc;
 
-    @FXML private VBox containerUeEnCours;
-    @FXML private VBox containerUeEchouees;
-    @FXML private VBox containerUeAutorises;
-    @FXML private VBox containerUeValidees;
+    @FXML
+    private VBox containerUeEnCours;
+    @FXML
+    private VBox containerUeEchouees;
+    @FXML
+    private VBox containerUeAutorises;
+    @FXML
+    private VBox containerUeValidees;
 
     private Etudiant etudiantCourant;
     private MainController mainController;
@@ -445,5 +455,52 @@ public class ProfilEtudiantController {
         }
     }
 
+    @FXML
+    public void handleSupprimerEtudiant() {
 
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation de suppression");
+        alert.setHeaderText("Supprimer l'étudiant ?");
+        alert.setContentText("Cette action est définitive. Voulez-vous continuer ?");
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+
+
+            boolean reussi = DataManager.getInstance().supprimerEtudiant(etudiantCourant);
+
+            if (reussi) {
+
+                fr.miage.toulouse.database.Request rq = new Request();
+
+                reussi = rq.supprimerEtudiant(this.etudiantCourant);
+
+                if (reussi) {
+                    Alert success = new Alert(Alert.AlertType.INFORMATION);
+                    success.setTitle("Suppression réussie");
+                    success.setHeaderText(null);
+                    success.setContentText("L'étudiant a été supprimé.");
+                    success.showAndWait();
+                    this.mainController.retourDashBord();
+
+                } else {
+                    Alert errorData = new Alert(Alert.AlertType.ERROR);
+                    errorData.setTitle("Erreur");
+                    errorData.setHeaderText("Échec de la suppression");
+                    errorData.setContentText("Impossible de supprimer l'étudiant.");
+                    errorData.showAndWait();
+                }
+            } else {
+                Alert error = new Alert(Alert.AlertType.ERROR);
+                error.setTitle("Erreur");
+                error.setHeaderText("Échec de la suppression");
+                error.setContentText("Impossible de supprimer l'étudiant.");
+                error.showAndWait();
+            }
+
+        } else {
+            // L’utilisateur a cliqué sur Annuler
+            System.out.println("Suppression annulée par l'utilisateur.");
+        }
+    }
 }
