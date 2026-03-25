@@ -45,12 +45,12 @@ public class AdminSemestreController {
 
     @FXML
     public void initialize() {
-        // 1. Initialisation des ComboBox de Simulation
+        // Initialisation des ComboBox de Simulation
         comboAnneeSimu.getItems().addAll("2024-2025", "2025-2026", "2026-2027", "2027-2028");
         comboSaisonSimu.getItems().addAll("Semestre Impair (Automne)", "Semestre Pair (Printemps)");
         mettreAJourLabelHorloge();
 
-        // 2. Initialisation des filtres du tableau (On récupère les listes depuis DataManager)
+        // Initialisation des filtres du tableau (On récupère les listes depuis DataManager)
         comboMention.getItems().add("Toutes");
         comboMention.getItems().addAll(DataManager.getInstance().getToutesLesMentions());
         comboMention.getSelectionModel().selectFirst();
@@ -62,7 +62,7 @@ public class AdminSemestreController {
         comboSemestre.getItems().addAll("Tous", "1", "2", "3", "4", "5", "6");
         comboSemestre.getSelectionModel().selectFirst();
 
-        // 3. Configuration des colonnes du tableau
+        // Configuration des colonnes du tableau
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
         colNumEtudiant.setCellValueFactory(new PropertyValueFactory<>("numEtu"));
@@ -74,25 +74,24 @@ public class AdminSemestreController {
 
         ajouterBoutonProfilDansTableau();
 
-        // 4. Ajout des "Listeners" : Dès qu'on change un filtre ou qu'on tape une recherche, ça met à jour le tableau
+        // Ajout des listeners, dès qu'on change un filtre ou qu'on tape une recherche => maj du tabelau
         comboMention.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                // Étape A : On vide la liste des parcours
+                // on vide la liste des parcours
                 comboParcours.getItems().clear();
                 comboParcours.getItems().add("Tous");
 
-                // Étape B : On reremplit avec les bons parcours
+                //  On reremplit avec les bons parcours
                 if (newVal.equals("Toutes")) {
                     comboParcours.getItems().addAll(DataManager.getInstance().getTousLesParcours());
                 } else {
-                    // On utilise la méthode de ton DataManager !
                     comboParcours.getItems().addAll(DataManager.getInstance().getParcoursParMention(newVal));
                 }
 
-                // Étape C : On resélectionne "Tous" par défaut
+                //On resélectionne "Tous" par défaut
                 comboParcours.getSelectionModel().selectFirst();
 
-                // Étape D : On met à jour le tableau
+                //maj tableau
                 chargerDonneesTableau();
             }
         });
@@ -103,12 +102,12 @@ public class AdminSemestreController {
         });
         comboSemestre.valueProperty().addListener((obs, oldVal, newVal) -> chargerDonneesTableau());
         searchField.textProperty().addListener((obs, oldVal, newVal) -> chargerDonneesTableau());
-        // 5. Premier chargement des données
+        // chargement données
         chargerDonneesTableau();
     }
 
     /**
-     * Charge les étudiants dans le tableau en utilisant la logique de ton collègue
+     * Charge les étudiants dans le tableau
      */
     private void chargerDonneesTableau() {
         String mention = (comboMention.getValue() == null || comboMention.getValue().equals("Toutes")) ? "Toutes les mentions" : comboMention.getValue();
@@ -166,7 +165,7 @@ public class AdminSemestreController {
     }
 
     /**
-     * MACHINE À VOYAGER DANS LE TEMPS : Change l'horloge sans toucher à la Base de Données
+     * Change l'horloge sans toucher à la Base de Données
      */
     @FXML
     public void handleSimulerTemps() {
@@ -189,7 +188,7 @@ public class AdminSemestreController {
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Simulation Temporelle");
-        alert.setHeaderText("🕰️ Voyage dans le temps réussi !");
+        alert.setHeaderText("Voyage dans le temps réussi !");
         alert.setContentText("L'application est maintenant en " + anneeChoisie + " (" + (isImpair ? "Impair" : "Pair") + ").\nAllez voir le profil d'un étudiant pour observer les nouvelles UE autorisées !");
         alert.showAndWait();
     }
@@ -201,13 +200,13 @@ public class AdminSemestreController {
     }
 
     /**
-     * CLÔTURE DÉFINITIVE : Passe toutes les UEs "en_cours" en "echoue" pour de vrai !
+     * Passe toutes les UEs "en_cours" en "echoue" pour de vrai
      */
     @FXML
     public void handleCloturerSemestre() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Clôture du semestre");
-        alert.setHeaderText("⚠️ Vous êtes sur le point de clôturer le semestre.");
+        alert.setHeaderText("Vous êtes sur le point de clôturer le semestre.");
         alert.setContentText("Tous les étudiants ayant encore des matières 'en cours' dans ce tableau se verront attribuer un ÉCHEC pour ces matières. Voulez-vous continuer ?");
 
         Optional<ButtonType> result = alert.showAndWait();
@@ -221,10 +220,10 @@ public class AdminSemestreController {
                 for (Inscription inscr : e.getInscription()) {
                     if (inscr.getStatut().equals("en_cours")) {
 
-                        // 1. Modification en Base de données
+                        // Modif bd
                         boolean succes = req.modifierStatutInscription(e.getNumEtu(), inscr.getUe().getCode(), inscr.getAnnee(), "echoue");
 
-                        // 2. Modification en mémoire Java
+                        // modif en mémoire Java
                         if (succes) {
                             inscr.setStatut("echoue");
                             compteurModifs++;
@@ -233,7 +232,7 @@ public class AdminSemestreController {
                 }
             }
 
-            // On rafraîchit le tableau (qui devrait se vider puisque plus personne n'a de matière "en cours" !)
+            // On rafraîchit le tableau (devient vide)
             chargerDonneesTableau();
 
             Alert info = new Alert(Alert.AlertType.INFORMATION, "Clôture terminée. " + compteurModifs + " matières ont été passées en 'Échouée'.");

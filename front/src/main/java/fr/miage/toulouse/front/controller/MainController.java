@@ -197,7 +197,7 @@ public class MainController {
             titleText.setText("Validation en masse");
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Erreur chargement Saisie Masse Valide : {}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Erreur chargement Saisie Masse Valide ", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -262,7 +262,7 @@ public class MainController {
             titleText.setText("Contrat Pédagogique - " + etudiant.getPrenom() + " " + etudiant.getNom());
 
         } catch (Exception e) {
-            System.err.println("❌ Erreur lors du chargement du profil étudiant : " + e.getMessage());
+            System.err.println("Erreur lors du chargement du profil étudiant : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -324,7 +324,7 @@ public class MainController {
             titleText.setText(titre);
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Erreur chargement profil : {}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Erreur chargement profil", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -415,6 +415,8 @@ public class MainController {
             }
         }
     }
+
+    // --- Setters ---
 
     /**
      * Gère l'apparence visuelle de la navigation et indique sur quelle on est

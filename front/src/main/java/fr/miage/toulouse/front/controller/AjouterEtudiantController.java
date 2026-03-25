@@ -44,17 +44,14 @@ public class AjouterEtudiantController {
      */
     @FXML
     public void initialize(){
-        // 1. Remplissage des semestres
-        comboSemestre.getItems().addAll("1", "2", "3", "4", "5", "6");
+        comboSemestre.getItems().addAll("1", "2", "3", "4", "5", "6"); //Tous les semestres possibles
         comboSemestre.getSelectionModel().selectFirst();
 
-        // 2. Remplissage des mentions depuis le DataManager
-        comboMention.getItems().addAll(DataManager.getInstance().getToutesLesMentions());
+        comboMention.getItems().addAll(DataManager.getInstance().getToutesLesMentions()); // On recupere les mentions
 
-        // 3. Verrouillage initial du parcours
-        comboParcours.setDisable(true);
+        comboParcours.setDisable(true);//Tant que la mention est pas choisi on peut pas choisir de parcours
 
-        // 4. Écouteur : Quand on choisit une mention, on débloque et on remplit les parcours
+        // maintenant on peut choisir un parcours
         comboMention.valueProperty().addListener((obs, ancienneValeur, nouvelleValeur) -> {
             if (nouvelleValeur != null){
                 comboParcours.setDisable(false);
@@ -65,12 +62,18 @@ public class AjouterEtudiantController {
     }
 
     /**
-     * A faire et revoir la méthode concernant les objets
+     * inscris un nouvel étudiant après validation  formulaire.
+     * plusieurs étapes
+     * - Vérifie que les champs sont bien rempli et dans le bon format
+     * - Récupération du Parcours
+     * - Instanciation du nouvel etudiant avec ses attributs par défaut
+     * Mise à jour du cache local (DataManager) et redirection vers la vue profil
+     * * @throws NumberFormatException Si le numéro étudiant saisi n'est pas un entier valide.
      */
     @FXML
     private void handleValider() {
         try {
-            // 1. Vérification basique des champs
+            // vérifie si tous les champs sont rempli
             if (fieldNumeroEtudiant.getText().isEmpty() || fieldNom.getText().isEmpty() ||
                     comboParcours.getValue() == null || pickerDate.getValue() == null) {
                 afficherAlerte("Champs manquants", "Veuillez remplir tous les champs obligatoires.", Alert.AlertType.WARNING);
@@ -83,11 +86,10 @@ public class AjouterEtudiantController {
             LocalDate dateNaiss = pickerDate.getValue();
             int semestreChoisiInt = Integer.parseInt(comboSemestre.getValue());
 
-            // 2. Retrouver l'OBJET Parcour à partir de son nom (String)
+            // retrouve le parcour à partir de son nom
             String nomParcoursChoisi = comboParcours.getValue();
             Parcour parcoursChoisi = null;
 
-            // On fouille dans la mémoire pour trouver un étudiant qui a ce parcours et on lui "vole" l'objet Parcours
             for (Etudiant e : DataManager.getInstance().getListeEtudiants()) {
                 if (e.getParcour().getNom().equals(nomParcoursChoisi)) {
                     parcoursChoisi = e.getParcour();
@@ -100,22 +102,21 @@ public class AjouterEtudiantController {
                 return;
             }
 
-            // 3. Création de l'étudiant avec les 7 paramètres requis par ton constructeur !
-            // (Nouveau venu = semestre choisi, et 0 ECTS pour l'instant)
+            // Création de l'étudiant
+            // par défault 0 ects
             Etudiant nouvelEtudiant = new Etudiant(numEtu, nom, prenom, dateNaiss,null, semestreChoisiInt, 0);
 
-            // 4. Sauvegarde en BDD
+            // Sauvegarde dans BDD
             Request req = new Request();
             if (req.ajouterEtudiant(nouvelEtudiant)) {
 
-                // 5. Ajout dans la mémoire vive
+                // Ajout dans la mémoire vive
                 DataManager.getInstance().ajouterEtudiantMemoire(nouvelEtudiant);
 
                 String semestreChoisiStr = comboSemestre.getValue();
 
-                System.out.println("✅ Redirection vers le profil de " + nom);
+                System.out.println("Redirection vers le profil de " + nom);
 
-                // 6. Redirection vers le Profil
                 if (mainController != null) {
                     mainController.handleProfilNouvelEtudiant(nouvelEtudiant, semestreChoisiStr);
                 }
