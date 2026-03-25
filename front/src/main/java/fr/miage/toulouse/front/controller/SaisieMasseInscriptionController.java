@@ -58,7 +58,7 @@ public class SaisieMasseInscriptionController {
             btnValiderMasse.setText("Inscrire à " + this.ueSelectionne.getNom());
         }
 
-        List<Etudiant> etudiants = DataManager.getInstance().getEudiantsAutoriséA(this.ueSelectionne);
+        List<Etudiant> etudiants = DataManager.getInstance().getEtudiantsAutorisesA(this.ueSelectionne);
 
         listeEtudiants.setAll(etudiants);
     }

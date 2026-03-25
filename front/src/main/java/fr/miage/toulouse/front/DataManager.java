@@ -239,7 +239,7 @@ public class DataManager {
         return resultat;
     }
 
-    public List<Etudiant> getEudiantsAutoriséA(Ue ueSelectionne){
+    public List<Etudiant> getEtudiantsAutorisesA(Ue ueSelectionne){
         List<Etudiant> resultat = new ArrayList<>();
 
         resultat.add(new Etudiant(2, "bidule", "chose", null, null, 1, 0));
