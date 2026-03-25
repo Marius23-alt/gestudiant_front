@@ -29,11 +29,16 @@ public class SaisieMasseValideController {
 
     private MainController mainController;
 
-    private Ue ueSelectionne;
+    private Ue ueSelectionne; // l'UE qui est cliqué sur la page UE
 
-    private ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList();
+    private ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList(); //Liste des étudiants qui sont présent quand on ouvre la page
 
 
+    /**
+     * Initialise le contrôleur et configure l'affichage du tableau.
+     * Définit le texte d'attente du contexte, lie les colonnes du tableau aux attributs
+     * de l'objet Etudiant et injecte la liste observable dans la vue.
+     */
 
     @FXML
     public void initialize() {
@@ -46,10 +51,11 @@ public class SaisieMasseValideController {
     }
 
 
+    /*
+    Affiche l'UE selectionné
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
-    }
+    Fait appel à la méthode getEtudiantsInscritsA(UE ue) pour avoir la liste des étudiants insrit à l'UE sélectionné
+     */
 
     public void setUeSelectionne(Ue ue){
         this.ueSelectionne = ue;
@@ -87,6 +93,11 @@ public class SaisieMasseValideController {
         }
     }
 
+    /**
+      Gère la validation collective des inscriptions pour l'UE sélectionnée.
+      Récupère la liste des étudiants cochés dans le tableau pour enregistrer massivement leur réussite
+     */
+
     @FXML
     private void handleValiderMasse(ActionEvent event) {
         System.out.println("Clic sur Valider Masse : Il faudra traiter les cases cochées !");
@@ -99,5 +110,10 @@ public class SaisieMasseValideController {
     private void handleSelectAll() {
         boolean selected = checkAll.isSelected();
         System.out.println("Tout sélectionner : " + selected);
+    }
+
+    // --- Setters ----
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 }

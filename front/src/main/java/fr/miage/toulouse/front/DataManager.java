@@ -84,15 +84,11 @@ public class DataManager {
      */
     public void ajouterEtudiantMemoire(Etudiant e) {
         this.listeEtudiants.add(e);
-        System.out.println("🧠 DataManager : " + e.getNom() + " ajouté en mémoire !");
+        System.out.println("DataManager : " + e.getNom() + " ajouté en mémoire !");
     }
 
 
     // ------- METHODE POUR LES FILTRES ----------
-
-    public String getAnneeUniversitaireCourante() {
-        return anneeUniversitaireCourante;
-    }
 
     /**
      * Indique si l'université est actuellement sur un semestre impair (Automne: S1, S3, S5)
@@ -181,6 +177,16 @@ public class DataManager {
     }
 
     // --- Getters ---
+
+    /**
+     * Extrait et retourne la l'année universitaire courante.
+     *
+     * @return Un String
+     */
+
+    public String getAnneeUniversitaireCourante() {
+        return anneeUniversitaireCourante;
+    }
     /**
      * Retourne la liste complète des étudiants actuellement stockée en mémoire.
      *
