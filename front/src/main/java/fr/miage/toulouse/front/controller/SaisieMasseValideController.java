@@ -67,6 +67,7 @@ public class SaisieMasseValideController {
         List<Etudiant> etudiants = DataManager.getInstance().getEtudiantsInscritsA(this.ueSelectionne);
 
         listeEtudiants.setAll(etudiants);
+
     }
 
     // --- ACTIONS DES BOUTONS ---
