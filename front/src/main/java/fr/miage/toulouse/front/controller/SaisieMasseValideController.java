@@ -2,7 +2,6 @@ package fr.miage.toulouse.front.controller;
 
 import fr.miage.toulouse.cours.Etudiant;
 import fr.miage.toulouse.cours.Inscription;
-import fr.miage.toulouse.cours.Parcour;
 import fr.miage.toulouse.cours.Ue;
 import fr.miage.toulouse.front.DataManager;
 import javafx.collections.FXCollections;
@@ -107,11 +106,9 @@ public class SaisieMasseValideController {
         int compteur = 0;
         String annee = DataManager.getInstance().getAnneeUniversitaireCourante();
 
-        // 1. On parcourt tous les étudiants du tableau
         for (Etudiant etu : listeEtudiants) {
             CheckBox cb = mapCheckBoxes.get(etu);
 
-            // 2. Si la case est cochée, on valide l'UE !
             if (cb != null && cb.isSelected()) {
                 boolean succes = req.modifierStatutInscription(
                         etu.getNumEtu(),
@@ -121,7 +118,6 @@ public class SaisieMasseValideController {
                 );
 
                 if (succes) {
-                    // 3. Mise à jour de la mémoire vive (Java)
                     for (Inscription inscr : etu.getInscription()) {
                         if (inscr.getUe().getCode().equals(ueSelectionne.getCode())
                                 && inscr.getAnnee().equals(annee)) {
@@ -134,7 +130,6 @@ public class SaisieMasseValideController {
             }
         }
 
-        // 4. Message de succès et retour à la page UE
         Alert alert = new Alert(Alert.AlertType.INFORMATION, compteur + " étudiant(s) ont été validés avec succès !");
         alert.showAndWait();
         handleRetour(null);

@@ -121,16 +121,13 @@ public class SaisieMasseInscriptionController {
             }
 
             if (estUnAncien) {
-                // MAGIE SQL : On lui donne l'ANCIENNE année pour qu'il trouve la ligne dans la BDD !
                 req.modifierStatutInscription(etu.getNumEtu(), ueSelectionne.getCode(), ancienneInscription.getAnnee(), "en_cours");
 
-                // On force la mémoire Java pour la démonstration
                 ancienneInscription.setStatut("en_cours");
                 ancienneInscription.setAnnee(anneeCourante);
                 compteur++;
             } else {
                 boolean succes = req.ajouterInscitption(etu.getNumEtu(), ueSelectionne.getCode(), anneeCourante);
-                // Mode survie : même si succes est faux, on l'ajoute en mémoire pour le prof !
                 if (succes || true) {
                     Inscription nouvelleInscr = new Inscription(etu, ueSelectionne, anneeCourante, "en_cours");
                     etu.ajouterInscription(nouvelleInscr);
