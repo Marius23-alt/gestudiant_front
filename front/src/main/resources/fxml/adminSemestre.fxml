@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
+
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.front.controller.AdminSemestreController">
+<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.miage.toulouse.front.controller.AdminSemestreController">
     <padding>
         <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
     </padding>
 
     <children>
         <VBox spacing="10.0" style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-border-color: #dee2e6; -fx-border-radius: 10; -fx-padding: 15;">
-            <Label text="⏱️ Panneau de Contrôle Temporel (Simulation - Ne modifie pas la BDD)" textFill="#03224C">
+            <Label text="Panneau de Contrôle Temporel (Simulation - Ne modifie pas la BDD)" textFill="#03224C">
                 <font><Font name="System Bold" size="16.0" /></font>
             </Label>
             <HBox alignment="CENTER_LEFT" spacing="15.0">
@@ -28,7 +29,7 @@
         </VBox>
 
         <VBox spacing="15.0" VBox.vgrow="ALWAYS">
-            <Label text="📋 Étudiants en attente de traitement (Ayant des UE &quot;en cours&quot;)" textFill="#03224C">
+            <Label text="Étudiants en attente de traitement (Ayant des UE &quot;en cours&quot;)" textFill="#03224C">
                 <font><Font name="System Bold" size="16.0" /></font>
             </Label>
 
@@ -61,7 +62,7 @@
             <Button mnemonicParsing="false" onAction="#handleCloturerSemestre" style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 10 30; -fx-cursor: hand;" text="Clôturer définitivement le semestre">
                 <font><Font name="System Bold" size="14.0" /></font>
             </Button>
-            <Label text="⚠️ Attention : Cette action passera toutes les UE non traitées en &quot;échouée&quot; et modifiera la Base de Données." textFill="#dc3545">
+            <Label text="Attention : Cette action passera toutes les UE non traitées en &quot;échouée&quot; et modifiera la Base de Données." textFill="#dc3545">
                 <font><Font name="System Italic" size="12.0" /></font>
             </Label>
         </VBox>
