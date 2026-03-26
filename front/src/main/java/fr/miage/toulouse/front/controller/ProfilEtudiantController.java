@@ -88,9 +88,12 @@ public class ProfilEtudiantController {
 
         viderConteneurs();
 
-        if (textEcts != null) textEcts.setText("ECTS : 0/180");
+        int semestreInt = Integer.parseInt(semestreChoisi);
+        int ectsInitiaux = (semestreInt - 1) * 30;
+
+        if (textEcts != null) textEcts.setText("ECTS : " + ectsInitiaux + "/180");
         if (textAnneeSemestre != null) textAnneeSemestre.setText("Entrée prévue : Semestre " + semestreChoisi);
-        if (ectsArc != null) ectsArc.setLength(0);
+        if (ectsArc != null) ectsArc.setLength((double) ectsInitiaux * 2);
 
         containerUeEnCours.getChildren().add(new Label("Aucune inscription en cours."));
         containerUeEchouees.getChildren().add(new Label("Aucun échec."));
@@ -117,14 +120,25 @@ public class ProfilEtudiantController {
 
         viderConteneurs();
 
-        int totalEctsEnDirect = 0;
+        int ectsEquivalence = (etudiant.getSemestreActuel() - 1) * 30; // Ex: S3 -> (3-1)*30 = 60 ECTS
+        int ectsLocauxPasse = 0;
+        int ectsLocauxActuel = 0;
+
         if (etudiant.getInscription() != null) {
             for (Inscription i : etudiant.getInscription()) {
                 if ("valide".equalsIgnoreCase(i.getStatut())) {
-                    totalEctsEnDirect += i.getUe().getNbCredit();
+                    // On sépare ce qu'il a validé dans le passé de ce qu'il valide maintenant
+                    if (i.getUe().getSemestre() < etudiant.getSemestreActuel()) {
+                        ectsLocauxPasse += i.getUe().getNbCredit();
+                    } else {
+                        ectsLocauxActuel += i.getUe().getNbCredit();
+                    }
                 }
             }
         }
+
+        int ectsPasseReel = Math.max(ectsEquivalence, ectsLocauxPasse);
+        int totalEctsEnDirect = ectsPasseReel + ectsLocauxActuel;
 
         if (textEcts != null) textEcts.setText("ECTS : " + totalEctsEnDirect + "/180");
         if (textAnneeSemestre != null) textAnneeSemestre.setText("Semestre Actuel : S" + etudiant.getSemestreActuel());
@@ -218,20 +232,11 @@ public class ProfilEtudiantController {
      */
     private void calculerUesAutorisees(Etudiant etudiant) {
         containerUeAutorises.getChildren().clear();
-        for (Inscription i : etudiant.getInscription()) {
-            System.out.println("  -> " + i.getUe().getCode() + " | " + i.getUe().getNom() + " | statut: " + i.getStatut());
-        }
-        System.out.println("---");
 
         boolean isSemestreGlobalImpair = DataManager.getInstance().isSemestreImpair();
         String anneeCourante = DataManager.getInstance().getAnneeUniversitaireCourante();
 
-        System.out.println("isSemestreGlobalImpair = " + isSemestreGlobalImpair);
-        System.out.println("anneeCourante = " + anneeCourante);
-
         List<Ue> toutesLesUes = DataManager.getInstance().getListeUes();
-
-
 
         List<String> codesValides = etudiant.getInscription().stream()
                 .filter(inscr -> inscr.getStatut().equals("valide"))
@@ -254,6 +259,15 @@ public class ProfilEtudiantController {
                 .map(inscr -> inscr.getUe().getCode())
                 .toList();
 
+        List<String> tousLesCodesEchoues = etudiant.getInscription().stream()
+                .filter(inscr -> inscr.getStatut().equals("echoue"))
+                .map(inscr -> inscr.getUe().getCode())
+                .toList();
+
+        List<String> toutesLesInscriptions = etudiant.getInscription().stream()
+                .map(inscr -> inscr.getUe().getCode())
+                .toList();
+
         List<Ue> uesAutorisees = toutesLesUes.stream()
                 .filter(ue -> ue.getParcour().getNom().equals(etudiant.getParcour().getNom()))
 
@@ -263,14 +277,23 @@ public class ProfilEtudiantController {
                         && !codesEnCours.contains(ue.getCode())
                         && !codesEchouesCetteAnnee.contains(ue.getCode()))
 
+                .filter(ue -> ue.getSemestre() >= etudiant.getSemestreActuel() || tousLesCodesEchoues.contains(ue.getCode()))
+
                 .filter(ue -> {
                     String prerequis = ue.getCodeUePrecedente();
 
                     if (prerequis == null || prerequis.trim().isEmpty()) {
                         return true;
                     }
+                    if (codesValides.contains(prerequis)) {
+                        return true;
+                    }
 
-                    return codesValides.contains(prerequis);
+                    if (ue.getSemestre() == etudiant.getSemestreActuel() && !toutesLesInscriptions.contains(prerequis)) {
+                        return true;
+                    }
+
+                    return false;
                 })
                 .toList();
 
