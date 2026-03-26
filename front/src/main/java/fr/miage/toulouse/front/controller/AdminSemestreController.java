@@ -188,7 +188,10 @@ public class AdminSemestreController {
     }
 
     /**
-     * Passe toutes les UEs "en_cours" en "echoue" pour de vrai
+     * Clôture définitivement le semestre en cours après confirmation de l'utilisateur.
+     * Cette action transforme automatiquement toutes les inscriptions encore "en cours"
+     * en "échec" (en base de données et en mémoire vive). Ensuite, elle fait avancer
+     * l'horloge globale de l'université vers le semestre suivant.
      */
     @FXML
     public void handleCloturerSemestre() {
@@ -220,6 +223,32 @@ public class AdminSemestreController {
             }
 
             chargerDonneesTableau();
+
+            DataManager dm = DataManager.getInstance();
+            boolean etaitImpair = dm.isSemestreImpair();
+            String anneeCourante = dm.getAnneeUniversitaireCourante();
+
+            String nouvelleAnnee;
+            boolean nouveauEstImpair;
+
+            if (etaitImpair) {
+                nouvelleAnnee = anneeCourante;
+                nouveauEstImpair = false;
+            } else {
+                String[] annees = anneeCourante.split("-");
+                int annee1 = Integer.parseInt(annees[0]) + 1;
+                int annee2 = Integer.parseInt(annees[1]) + 1;
+                nouvelleAnnee = annee1 + "-" + annee2; // Ex: 2024-2025 -> 2025-2026
+                nouveauEstImpair = true;
+            }
+
+            Request reqPourHorloge = new Request();
+            reqPourHorloge.avancerHorlogeGlobale(nouvelleAnnee, nouveauEstImpair);
+
+            dm.setAnneeUniversitaireCourante(nouvelleAnnee);
+            dm.setSemestreImpair(nouveauEstImpair);
+
+            System.out.println("🎓 Nouvelle période universitaire : " + nouvelleAnnee + " (Impair: " + nouveauEstImpair + ")");
 
             Alert info = new Alert(Alert.AlertType.INFORMATION, "Clôture terminée. " + compteurModifs + " matières ont été passées en 'Échouée'.");
             info.show();
