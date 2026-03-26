@@ -60,13 +60,13 @@ public class DataManager {
      * </p>
      */
     public void initialiserDonnees() {
-        System.out.println("💾 DataManager : Chargement des données en mémoire...");
+        System.out.println("DataManager : Chargement des données en mémoire...");
         Request req = new Request();
 
         String[] config = req.recupConfigurationGlobale();
         this.anneeUniversitaireCourante = config[0];
         this.isSemestreImpair = Boolean.parseBoolean(config[1]);
-        System.out.println("🕒 DataManager : Horloge réglée sur l'année " + anneeUniversitaireCourante + " (Semestre Impair : " + isSemestreImpair + ")");
+        System.out.println("DataManager : Horloge réglée sur l'année " + anneeUniversitaireCourante + " (Semestre Impair : " + isSemestreImpair + ")");
 
         this.listeEtudiants = req.recupTousLesEtudiants();
         this.listeUe = req.recupToutesLesUe();
