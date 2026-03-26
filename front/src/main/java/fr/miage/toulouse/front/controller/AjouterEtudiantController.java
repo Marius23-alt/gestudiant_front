@@ -115,7 +115,7 @@ public class AjouterEtudiantController {
                     mainController.handleProfilNouvelEtudiant(nouvelEtudiant, semestreChoisiStr);
                 }
             } else {
-                afficherAlerte("Erreur BDD", "L'étudiant n'a pas pu être inséré. (Ce numéro étudiant existe peut-être déjà ?)", Alert.AlertType.ERROR);
+                afficherAlerte("Erreur BDD", "L'étudiant n'a pas pu être inséré car ce numéro étudiant existe déjà.)", Alert.AlertType.ERROR);
             }
 
         } catch (NumberFormatException e) {
